@@ -65,7 +65,7 @@ type snipeITHardwareResponseT struct {
 			Eol                  int    `json:"eol"`
 			Image                string `json:"image"`
 			DeprecatedMacAddress int    `json:"deprecated_mac_address"`
-			FieldsetID           string `json:"fieldset_id"`
+			FieldsetID           int    `json:"fieldset_id"`
 			Notes                string `json:"notes"`
 			Requestable          int    `json:"requestable"`
 		} `json:"model"`
