@@ -105,7 +105,7 @@ func main() {
 	file.Close()
 
 	//Executa o comando Script para escrever a sessão do terminal em arquivo txt (Tamanho do disco)
-	cmd := exec.Command("script", "-c", "free |grep Mem |awk '{print $2}'", "tamanhoDoHd.txt")
+	cmd := exec.Command("script", "-c", "free -h |grep Mem |awk '{print $2}'", "tamanhoDoHd.txt")
 	stdout, _ := cmd.Output()
 	fmt.Println(string(stdout))
 
@@ -263,10 +263,105 @@ func main() {
 	var name *string = &hw.Name
 	var modeloAtivo *string = &hw.SnipeitModel12
 
-	fmt.Println("Digite o ID do Modelo (Padrão: \"8\"): ")
-	fmt.Scanf("%v", IDmodelo)
-	fmt.Println("Digite o ID do Status (Padrão: \"5\"): ")
+	fmt.Println("Digite o Tipo de Ativo (Exemplo:Teclado/Desktop/MacBook): ")
+	fmt.Scanf("%v", "%v", "%v", "%v", IDmodelo)
+
+	//identificando o Modelo
+	switch *IDmodelo {
+	case "Leitor de Cartão Mesa":
+		*IDmodelo = "1"
+	case "Leitor de Cartão Porta":
+		*IDmodelo = "2"
+	case "Mouse Sem Fio":
+		*IDmodelo = "3"
+	case "Roteador":
+		*IDmodelo = "4"
+	case "Roteador Wireless":
+		*IDmodelo = "5"
+	case "Notebook":
+		*IDmodelo = "6"
+	case "Celular Samsumg":
+		*IDmodelo = "7"
+	case "Desktop":
+		*IDmodelo = "8"
+	case "Vostro":
+		*IDmodelo = "9"
+	case "Bravia":
+		*IDmodelo = "10"
+	case "Default":
+		*IDmodelo = "11"
+	case "DP720":
+		*IDmodelo = "12"
+	case "Telefone Grandstream":
+		*IDmodelo = "13"
+	case "NP350":
+		*IDmodelo = "14"
+	case "Samsung Default":
+		*IDmodelo = "15"
+	case "NP530":
+		*IDmodelo = "16"
+	case "NP370":
+		*IDmodelo = "17"
+	case "Ideapad":
+		*IDmodelo = "18"
+	case "P 250":
+		*IDmodelo = "19"
+	case "Inspirion":
+		*IDmodelo = "20"
+	case "Asus X":
+		*IDmodelo = "21"
+	case "MacBook":
+		*IDmodelo = "22"
+	case "SMS":
+		*IDmodelo = "23"
+	case "OfficeJet":
+		*IDmodelo = "24"
+	case "LaserJet":
+		*IDmodelo = "25"
+	case "Asus":
+		*IDmodelo = "26"
+	case "D11":
+		*IDmodelo = "27"
+	case "XPS":
+		*IDmodelo = "28"
+	case "C3":
+		*IDmodelo = "29"
+	case "Multilaser Desk":
+		*IDmodelo = "30"
+	case "Zelman Desk":
+		*IDmodelo = "31"
+	case "TV LG":
+		*IDmodelo = "32"
+	case "Braviaa":
+		*IDmodelo = "33"
+	case "AOC":
+		*IDmodelo = "34"
+	case "Dell":
+		*IDmodelo = "35"
+	case "Flantron":
+		*IDmodelo = "36"
+	case "Samsung":
+		*IDmodelo = "37"
+	default:
+		*IDmodelo = "11"
+	}
+
+	fmt.Println("Digite o Status do Ativo (Padrão: Disponível): ")
 	fmt.Scanf("%v", IDstatus)
+
+	//Identificando o Status
+	switch *IDstatus {
+	case "Disponível":
+		*IDstatus = "5"
+	case "Indisponível":
+		*IDstatus = "6"
+	case "Ocupado":
+		*IDstatus = "7"
+	case "Descartado":
+		*IDstatus = "4"
+	default:
+		*IDstatus = "5"
+	}
 	fmt.Println("Digite a Marcação do Ativo (Precisa ser única): ")
 	fmt.Scanf("%v", Assettag)
 	fmt.Println("Digite o Nome do Ativo: ")
