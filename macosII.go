@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-//Definindo Tipo para popular com as informações do computador
+//Definindo Tipo para popular com as informações do computador.
 type MacOSt struct {
 	SnipeitSo8        string `json:"_snipeit_so_8"`
 	SnipeitModel12    string `json:"_snipeit_modelo_12"`
