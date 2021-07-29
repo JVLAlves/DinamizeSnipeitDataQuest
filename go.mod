@@ -1,3 +1,3 @@
-module github.com/davecgh/go-spew/spew
+module https://github.com/JVLAlves/DinamizeSnipeitDataQuest
 
 go 1.16
