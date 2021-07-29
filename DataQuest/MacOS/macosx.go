@@ -182,20 +182,21 @@ func Running() {
 	return
 }
 
-func main() {
+//Executa o programa em sua totalidade (criando os arquivos [Create()] e lendo os arquivos [Running])
+func Executing() {
 
 	//Criando Arquivos via Goroutines
 	wg := &sync.WaitGroup{}
 	wg.Add(5)
-	go create(wg, "uname", "-n")
-	go create(wg, "sysctl", "-a |grep machdep.cpu.brand_string |awk '{print $2,$3,$4}'")
-	go create(wg, "hostinfo", "|grep memory |awk '{print $4,$5}'")
-	go create(wg, "diskutil", "list |grep disk0s2 | awk '{print $5,$6}'")
-	go create(wg, "sw_vers", "-productVersion")
+	go Create(wg, "uname", "-n")
+	go Create(wg, "sysctl", "-a |grep machdep.cpu.brand_string |awk '{print $2,$3,$4}'")
+	go Create(wg, "hostinfo", "|grep memory |awk '{print $4,$5}'")
+	go Create(wg, "diskutil", "list |grep disk0s2 | awk '{print $5,$6}'")
+	go Create(wg, "sw_vers", "-productVersion")
 	wg.Wait()
 
 	// Lendo Arquivos
-	running()
+	Running()
 
 	//Verificação das informações "Appendadas"
 	fmt.Println(infos)
