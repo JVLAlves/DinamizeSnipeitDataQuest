@@ -415,7 +415,7 @@ func Executing() {
 	log.Print(bodyString)
 
 	// Unmarshal do resultado do response
-	response := snipeITHardwareResponseT{}
+	response := SnipeITHardwareResponseT{}
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		log.Printf("Reading body failed: %s", err)
