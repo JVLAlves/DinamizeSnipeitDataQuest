@@ -30,7 +30,7 @@ type MacOSt struct {
 }
 
 //Modelo de RESPONSE
-type snipeITHardwareResponseT struct {
+type SnipeITHardwareResponseT struct {
 	Status   string `json:"status"`
 	Messages string `json:"messages"`
 	Payload  struct {
@@ -76,13 +76,13 @@ type snipeITHardwareResponseT struct {
 }
 
 //Lista para leitura linha a linha
-var linhas []string
+var Linhas []string
 
 //Lista para Informações armazenadas
-var infos []string
+var Infos []string
 
 //Cria arquivos com as informações retiradas do computador via Terminal
-func create(wg *sync.WaitGroup, command string, args string) {
+func Create(wg *sync.WaitGroup, command string, args string) {
 
 	outFile, err := os.OpenFile(command+".out", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	defer outFile.Close()
@@ -109,22 +109,22 @@ func create(wg *sync.WaitGroup, command string, args string) {
 }
 
 //Lê os arquivos criados pela função Create
-func running() {
+func Running() {
 
 	file, err := os.Open("uname.out")
 	if err != nil {
 		log.Print(err)
 	}
 	fileScanner := bufio.NewScanner(file)
-	linhas = []string{}
+	Linhas = []string{}
 
 	for fileScanner.Scan() {
-		linhas = append(linhas, fileScanner.Text())
+		Linhas = append(Linhas, fileScanner.Text())
 		if fileScanner.Err() != nil {
 			log.Fatalf("Erro SCAN: %v", fileScanner.Err().Error())
 		}
 	}
-	infos = append(infos, linhas[0])
+	Infos = append(Infos, Linhas[0])
 	file.Close()
 
 	file, err = os.Open("sysctl.out")
@@ -132,12 +132,12 @@ func running() {
 		log.Print(err)
 	}
 	fileScanner = bufio.NewScanner(file)
-	linhas = []string{}
+	Linhas = []string{}
 	for fileScanner.Scan() {
-		linhas = append(linhas, fileScanner.Text())
+		Linhas = append(Linhas, fileScanner.Text())
 	}
-	infos = append(infos, linhas[0])
-	fmt.Println(infos[1])
+	Infos = append(Infos, Linhas[0])
+	fmt.Println(Infos[1])
 	file.Close()
 
 	file, err = os.Open("hostinfo.out")
@@ -145,12 +145,12 @@ func running() {
 		log.Print(err)
 	}
 	fileScanner = bufio.NewScanner(file)
-	linhas = []string{}
+	Linhas = []string{}
 	for fileScanner.Scan() {
-		linhas = append(linhas, fileScanner.Text())
+		Linhas = append(Linhas, fileScanner.Text())
 	}
-	infos = append(infos, linhas[0])
-	fmt.Println(infos[2])
+	Infos = append(Infos, Linhas[0])
+	fmt.Println(Infos[2])
 	file.Close()
 
 	file, err = os.Open("diskutil.out")
@@ -158,12 +158,12 @@ func running() {
 		log.Print(err)
 	}
 	fileScanner = bufio.NewScanner(file)
-	linhas = []string{}
+	Linhas = []string{}
 	for fileScanner.Scan() {
-		linhas = append(linhas, fileScanner.Text())
+		Linhas = append(Linhas, fileScanner.Text())
 	}
-	infos = append(infos, linhas[0])
-	fmt.Println(infos[3])
+	Infos = append(Infos, Linhas[0])
+	fmt.Println(Infos[3])
 	file.Close()
 
 	file, err = os.Open("sw_vers.out")
@@ -171,12 +171,12 @@ func running() {
 		log.Print(err)
 	}
 	fileScanner = bufio.NewScanner(file)
-	linhas = []string{}
+	Linhas = []string{}
 	for fileScanner.Scan() {
-		linhas = append(linhas, fileScanner.Text())
+		Linhas = append(Linhas, fileScanner.Text())
 	}
-	infos = append(infos, linhas[0])
-	fmt.Println(infos[4])
+	Infos = append(Infos, Linhas[0])
+	fmt.Println(Infos[4])
 	file.Close()
 
 	return
