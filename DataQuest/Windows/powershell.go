@@ -1,4 +1,4 @@
-package main
+package Windows
 
 import (
 	"bytes"
