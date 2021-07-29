@@ -199,16 +199,16 @@ func Executing() {
 	Running()
 
 	//Verificação das informações "Appendadas"
-	fmt.Println(infos)
+	fmt.Println(Infos)
 
 	var mac MacOSt = MacOSt{}
 
 	//Populando Struct MacOSt
-	mac.SnipeitCPU11 = infos[1]
-	mac.SnipeitMema3Ria7 = infos[2]
-	mac.SnipeitSo8 = infos[4]
-	mac.SnipeitHostname10 = infos[0]
-	mac.SnipeitHd9 = infos[3]
+	mac.SnipeitCPU11 = Infos[1]
+	mac.SnipeitMema3Ria7 = Infos[2]
+	mac.SnipeitSo8 = Infos[4]
+	mac.SnipeitHostname10 = Infos[0]
+	mac.SnipeitHd9 = Infos[3]
 
 	//Alternando Versão Númerica para Versão Nominal
 	switch mac.SnipeitSo8 {
