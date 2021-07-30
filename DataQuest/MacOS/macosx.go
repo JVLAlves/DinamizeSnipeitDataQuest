@@ -256,6 +256,24 @@ func Snipesending(mac MacOSt) {
 	fmt.Println(string(stdout))
 }
 
+/*Apaga os arquivos criados no inicio do código.
+Não é necessário utiliza-lo após a função Snipesending, já possui esse programa internamente.*/
+func Clear() {
+
+	//Animação de Apagando Junk Files
+	fmt.Print("\nApagando Junk Files")
+	for i := 0; i < 4; i++ {
+		time.Sleep(time.Second * 1)
+		fmt.Print(".")
+	}
+
+	//Apagando Junk Files
+	cmd := exec.Command("rm", "uname.out", "sysctl.out", "hostinfo.out", "diskutil.out", "sw_vers.out")
+	stdout, _ := cmd.Output()
+	fmt.Println(string(stdout))
+
+}
+
 //Executa o programa em sua totalidade (criando os arquivos [Create()] e lendo os arquivos [Running])
 func Executing() {
 
