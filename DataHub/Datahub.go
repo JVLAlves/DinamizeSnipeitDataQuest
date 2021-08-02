@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/MacOS"
+	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Windows"
 )
 
 func forMacOs() {
@@ -205,7 +206,10 @@ func forMacOs() {
 
 		switch anotherAnswer {
 		case "sim", "s":
-			MacOS.Clear()
+			wg := &sync.WaitGroup{}
+			wg.Add(1)
+			go MacOS.Clear(wg)
+			wg.Wait()
 		case "nao", "n":
 			fmt.Println("Certo. Fique à Vontade!")
 		}
@@ -225,6 +229,7 @@ func main() {
 	case "Linux", "linux", "LINUX":
 
 	case "Windows", "WINDOWS", "windows":
+		Windows.MainProgram()
 
 	}
 }
