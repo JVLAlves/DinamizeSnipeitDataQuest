@@ -271,6 +271,7 @@ func Clear(wg *sync.WaitGroup) {
 	cmd := exec.Command("rm", "uname.out", "sysctl.out", "hostinfo.out", "diskutil.out", "sw_vers.out")
 	stdout, _ := cmd.Output()
 	fmt.Println(string(stdout))
+	wg.Done()
 
 }
 
