@@ -258,7 +258,7 @@ func Snipesending(mac MacOSt) {
 
 /*Apaga os arquivos criados no inicio do código.
 Não é necessário utiliza-lo após a função Snipesending, já possui esse programa internamente.*/
-func Clear() {
+func Clear(wg *sync.WaitGroup) {
 
 	//Animação de Apagando Junk Files
 	fmt.Print("\nApagando Junk Files")
@@ -271,6 +271,7 @@ func Clear() {
 	cmd := exec.Command("rm", "uname.out", "sysctl.out", "hostinfo.out", "diskutil.out", "sw_vers.out")
 	stdout, _ := cmd.Output()
 	fmt.Println(string(stdout))
+	wg.Done()
 
 }
 
