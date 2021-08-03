@@ -187,4 +187,5 @@ func MainProgram() {
 	_, _, _ = posh.Execute("Remove-Item -path $env:userprofile\\logfileees\\Informacoes_Do_Sistema.txt")
 	_, _, _ = posh.Execute("Remove-Item -path $env:userprofile\\logfileees\\logfileees.txt")
 	_, _, _ = posh.Execute("Remove-Item -path $env:userprofile\\logfileees")
+
 }
