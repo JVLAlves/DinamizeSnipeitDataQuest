@@ -269,7 +269,7 @@ func MainProgram() {
 	fmt.Println(Infos)
 }
 
-func snipeSending() {
+func Snipesending() {
 	//Variável recebe o tipo REQUEST
 	var hw SnipeITHardwareRequestT = SnipeITHardwareRequestT{}
 
