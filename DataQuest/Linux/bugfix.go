@@ -10,10 +10,12 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"
+	"strings"
 )
 
 // Modelo POST/REQUEST
-type snipeITHardwareRequestT struct {
+type SnipeITHardwareRequestT struct {
 	ModelID           string `json:"model_id"`
 	StatusID          string `json:"status_id"`
 	AssetTag          string `json:"asset_tag"`
@@ -27,7 +29,7 @@ type snipeITHardwareRequestT struct {
 }
 
 //Modelo de RESPONSE
-type snipeITHardwareResponseT struct {
+type SnipeITHardwareResponseT struct {
 	Status   string `json:"status"`
 	Messages string `json:"messages"`
 	Payload  struct {
@@ -73,10 +75,10 @@ type snipeITHardwareResponseT struct {
 }
 
 //Variáveis de armazenamento dos dados da máquina
-var linhas = []string{}
-var infos = []string{}
+var Linhas = []string{}
+var Infos = []string{}
 
-func main() {
+func MainProgram() {
 	// Abrindo o Arquivo CPU
 	file, err := os.Open("/proc/cpuinfo")
 	if err != nil {
@@ -89,12 +91,23 @@ func main() {
 	//Lendo linha a linha
 	for fileScanner.Scan() {
 		fmt.Println(fileScanner.Text())
-		linhas = append(linhas, fileScanner.Text())
+		Linhas = append(Linhas, fileScanner.Text())
 
 	}
 	// adicionando informação encontrada no arquivo CPU a variável
+	var infostemp []string
+	infostemp = append(infostemp, Linhas[4])
 
-	infos = append(infos, linhas[4])
+	re := regexp.MustCompile(`(Intel).+`)
+	//fmt.Println("\n\n\n", Infos)
+	for i := 0; i < len(infostemp); i++ {
+		Abc := re.FindAllString(infostemp[i], -1)
+		justString := strings.Join(Abc, "")
+		if justString != "" {
+			Infos = append(Infos, justString)
+		}
+		justString = ""
+	}
 
 	//Tratando o ocasoional erro da leitura do arquivo
 	if err := fileScanner.Err(); err != nil {
@@ -120,18 +133,18 @@ func main() {
 	//Lendo o arquivo "tamanhoDoHd.txt"
 	fileScanner = bufio.NewScanner(file)
 
-	//Limpa o Array das linhas
-	linhas = []string{}
+	//Limpa o Array das Linhas
+	Linhas = []string{}
 
 	//Lendo linha a linha
 	for fileScanner.Scan() {
 		fmt.Println(fileScanner.Text())
-		linhas = append(linhas, fileScanner.Text())
+		Linhas = append(Linhas, fileScanner.Text())
 
 	}
 
 	// adicionando informação encontrada no arquivo "tamanhoDoHd.txt" a variável
-	infos = append(infos, linhas[1])
+	Infos = append(Infos, Linhas[1])
 
 	//Tratando o ocasoional erro da leitura do arquivo
 	if err := fileScanner.Err(); err != nil {
@@ -157,18 +170,18 @@ func main() {
 	//Lendo o arquivo "SO.txt"
 	fileScanner = bufio.NewScanner(file)
 
-	//Limpa o Array das linhas
-	linhas = []string{}
+	//Limpa o Array das Linhas
+	Linhas = []string{}
 
 	//Lendo linha a linha
 	for fileScanner.Scan() {
 		fmt.Println(fileScanner.Text())
-		linhas = append(linhas, fileScanner.Text())
+		Linhas = append(Linhas, fileScanner.Text())
 
 	}
 
 	// adicionando informação encontrada no arquivo "SO.txt" a variável
-	infos = append(infos, linhas[1])
+	Infos = append(Infos, Linhas[1])
 
 	//Tratando o ocasoional erro da leitura do arquivo
 	if err := fileScanner.Err(); err != nil {
@@ -194,17 +207,17 @@ func main() {
 	//Lendo o arquivo "Hostname.txt"
 	fileScanner = bufio.NewScanner(file)
 
-	//Limpa o Array das linhas
-	linhas = []string{}
+	//Limpa o Array das Linhas
+	Linhas = []string{}
 
 	//Lendo linha a linha
 	for fileScanner.Scan() {
 		fmt.Println(fileScanner.Text())
-		linhas = append(linhas, fileScanner.Text())
+		Linhas = append(Linhas, fileScanner.Text())
 
 	}
 
-	infos = append(infos, linhas[1])
+	Infos = append(Infos, Linhas[1])
 
 	// adicionando informação encontrada no arquivo "Hostname.txt" a variável
 	if err := fileScanner.Err(); err != nil {
@@ -228,17 +241,17 @@ func main() {
 	}
 
 	fileScanner = bufio.NewScanner(file)
-	linhas = []string{}
+	Linhas = []string{}
 
 	//Lendo linha a linha
 	for fileScanner.Scan() {
 		fmt.Println(fileScanner.Text())
-		linhas = append(linhas, fileScanner.Text())
+		Linhas = append(Linhas, fileScanner.Text())
 
 	}
 
 	// adicionando informação encontrada no arquivo "tamanhoDoDisco.txt" a variável
-	infos = append(infos, linhas[1])
+	Infos = append(Infos, Linhas[1])
 
 	//Tratando o ocasoional erro da leitura do arquivo
 	if err := fileScanner.Err(); err != nil {
@@ -248,13 +261,17 @@ func main() {
 	//fechando o arquivo lido
 	file.Close()
 
-	/*for i := 0; i != len(infos); i++ {
+	/*for i := 0; i != len(Infos); i++ {
 
-		fmt.Println(infos[i])
+		fmt.Println(Infos[i])
 	}*/
 
+	fmt.Println(Infos)
+}
+
+func snipeSending() {
 	//Variável recebe o tipo REQUEST
-	var hw snipeITHardwareRequestT = snipeITHardwareRequestT{}
+	var hw SnipeITHardwareRequestT = SnipeITHardwareRequestT{}
 
 	//Entrada Personalizada
 	var IDmodelo *string = &hw.ModelID
@@ -370,11 +387,11 @@ func main() {
 	fmt.Scanf("%v", modeloAtivo)
 
 	//Populando a variável
-	hw.SnipeitCPU11 = infos[0]
-	hw.SnipeitMema3Ria7 = infos[1]
-	hw.SnipeitSo8 = infos[2]
-	hw.SnipeitHostname10 = infos[3]
-	hw.SnipeitHd9 = infos[4]
+	hw.SnipeitCPU11 = Infos[0]
+	hw.SnipeitMema3Ria7 = Infos[1]
+	hw.SnipeitSo8 = Infos[2]
+	hw.SnipeitHostname10 = Infos[3]
+	hw.SnipeitHd9 = Infos[4]
 
 	//URL da API SnipeIt
 	url := "http://10.20.1.79:8001/api/v1/hardware"
@@ -424,7 +441,7 @@ func main() {
 	log.Print(bodyString)
 
 	// Unmarshal do resultado do response
-	response := snipeITHardwareResponseT{}
+	response := SnipeITHardwareResponseT{}
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		log.Printf("Reading body failed: %s", err)
@@ -435,8 +452,7 @@ func main() {
 	fmt.Println("Response do POST:", response)
 
 	//Apagando Junk Files
-	cmd = exec.Command("rm", "tamanhoDoHd.txt", "SO.txt", "hostname.txt", "tamanhoDoDisco.txt")
-	stdout, _ = cmd.Output()
+	cmd := exec.Command("rm", "tamanhoDoHd.txt", "SO.txt", "hostname.txt", "tamanhoDoDisco.txt")
+	stdout, _ := cmd.Output()
 	fmt.Println(string(stdout))
-
 }
