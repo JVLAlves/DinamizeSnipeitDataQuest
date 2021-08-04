@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Linux"
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/MacOS"
@@ -71,7 +72,7 @@ func forMacOs() {
 	var modeloAtivo *string = &mac.SnipeitModel12
 
 	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Teclado/Desktop/MacBook/Leito_de_Cartão_Mesa): ")
+	fmt.Println("Digite o Tipo de Ativo (Exemplo:Teclado/Desktop/MacBook/Leitor_de_Cartão_Mesa): ")
 	fmt.Scanf("%v", IDmodelo)
 
 	//identificando o Modelo
@@ -154,30 +155,13 @@ func forMacOs() {
 		*IDmodelo = "11"
 	}
 
-	//Input Manual: Status
-	fmt.Println("Digite o Status do Ativo (Padrão: Disponível): ")
-	fmt.Scanf("%v", IDstatus)
+	//Input: Status
+	*IDstatus = "5"
 
-	//Identificando o Status
-	switch *IDstatus {
-	case "Disponivel":
-		*IDstatus = "5"
-	case "Indisponivel":
-		*IDstatus = "6"
-	case "Ocupado":
-		*IDstatus = "7"
-	case "Descartado":
-		*IDstatus = "4"
-	default:
-		*IDstatus = "5"
-	}
-
-	//Inputs Manuais: Asset Tag, Name, Modelo do Ativo
-	fmt.Println("Digite uma Marcação do Ativo única (Exemplo: T008921): ")
-	fmt.Scanf("%v", Assettag)
-	fmt.Println("Digite o Nome do Ativo (Exemplo: Macbook2014/Mac/Macintosh): ")
-	fmt.Scanf("%v", name)
-	fmt.Println("Digite o Modelo do Ativo (Exemplo: Air): ")
+	//Inputs: Asset Tag, Name, Modelo do Ativo
+	*Assettag = mac.SnipeitHostname10
+	*name = mac.SnipeitHostname10
+	fmt.Println("Digite o Modelo do Ativo (Exemplo: AXL033): ")
 	fmt.Scanf("%v", modeloAtivo)
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
@@ -185,13 +169,15 @@ func forMacOs() {
 	fmt.Printf("ASSET TAG: %v\n", mac.AssetTag)
 	fmt.Printf("TIPO DE ATIVO: %v\n", mac.ModelID)
 	fmt.Printf("MODELO DO ATIVO: %v\n", mac.SnipeitModel12)
-	fmt.Printf("STATUS: %v\n\n", mac.StatusID)
+	fmt.Printf("STATUS ID: (%v) Disponível [Padrão]\n\n", mac.StatusID)
 	fmt.Printf("DESCRIÇÃO DO ATIVO\n")
 	fmt.Printf("HOSTNAME: %v\n", mac.SnipeitHostname10)
 	fmt.Printf("S.O.: %v\n", mac.SnipeitSo8)
 	fmt.Printf("CPU: %v\n", mac.SnipeitCPU11)
 	fmt.Printf("MEMORIA RAM: %v\n", mac.SnipeitMema3Ria7)
 	fmt.Printf("DISCO: %v\n\n", mac.SnipeitHd9)
+
+	time.Sleep(time.Second * 5)
 
 	fmt.Println("Você deseja enviar essas informações para o inventário Snipeit? (sim/nao)")
 	var answer string
@@ -240,7 +226,7 @@ func forWindows() {
 	var modeloAtivo *string = &win.SnipeitModel12
 
 	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Teclado/Desktop/MacBook/Leito_de_Cartão_Mesa): ")
+	fmt.Println("Digite o Tipo de Ativo (Exemplo:Teclado/Desktop/MacBook/Leitor_de_Cartão_Mesa): ")
 	fmt.Scanf("%v", IDmodelo)
 
 	//identificando o Modelo
@@ -324,29 +310,12 @@ func forWindows() {
 	}
 
 	//Input Manual: Status
-	fmt.Println("Digite o Status do Ativo (Padrão: Disponível): ")
-	fmt.Scanf("%v", IDstatus)
-
-	//Identificando o Status
-	switch *IDstatus {
-	case "Disponivel":
-		*IDstatus = "5"
-	case "Indisponivel":
-		*IDstatus = "6"
-	case "Ocupado":
-		*IDstatus = "7"
-	case "Descartado":
-		*IDstatus = "4"
-	default:
-		*IDstatus = "5"
-	}
+	*IDstatus = "5"
 
 	//Inputs Manuais: Asset Tag, Name, Modelo do Ativo
-	fmt.Println("Digite uma Marcação do Ativo única (Exemplo: T008921): ")
-	fmt.Scanf("%v", Assettag)
-	fmt.Println("Digite o Nome do Ativo (Exemplo: Macbook2014/Mac/Macintosh): ")
-	fmt.Scanf("%v", name)
-	fmt.Println("Digite o Modelo do Ativo (Exemplo: Air): ")
+	*Assettag = win.SnipeitHostname10
+	*name = win.SnipeitHostname10
+	fmt.Println("Digite o Modelo do Ativo (Exemplo: AXL033): ")
 	fmt.Scanf("%v", modeloAtivo)
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
@@ -354,13 +323,15 @@ func forWindows() {
 	fmt.Printf("ASSET TAG: %v\n", win.AssetTag)
 	fmt.Printf("TIPO DE ATIVO: %v\n", win.ModelID)
 	fmt.Printf("MODELO DO ATIVO: %v\n", win.SnipeitModel12)
-	fmt.Printf("STATUS: %v\n\n", win.StatusID)
+	fmt.Printf("STATUS ID: (%v) Disponível [Padrão]\n\n", win.StatusID)
 	fmt.Printf("DESCRIÇÃO DO ATIVO\n")
 	fmt.Printf("HOSTNAME: %v\n", win.SnipeitHostname10)
 	fmt.Printf("S.O.: %v\n", win.SnipeitSo8)
 	fmt.Printf("CPU: %v\n", win.SnipeitCPU11)
 	fmt.Printf("MEMORIA RAM: %v\n", win.SnipeitMema3Ria7)
 	fmt.Printf("DISCO: %v\n\n", win.SnipeitHd9)
+
+	time.Sleep(time.Second * 5)
 
 	fmt.Println("Você deseja enviar essas informações para o inventário Snipeit? (sim/nao)")
 	var answer string
@@ -370,19 +341,7 @@ func forWindows() {
 	case "sim", "s":
 		MacOS.Snipesending(win)
 	case "nao", "n":
-		fmt.Println("Você deseja apagar os arquivos criados? (sim/nao)")
-		var anotherAnswer string
-		fmt.Scanf("%v", &anotherAnswer)
-
-		switch anotherAnswer {
-		case "sim", "s":
-			wg := &sync.WaitGroup{}
-			wg.Add(1)
-			go MacOS.Clear(wg)
-			wg.Wait()
-		case "nao", "n":
-			fmt.Println("Certo. Fique à Vontade!")
-		}
+		break
 
 	}
 
@@ -410,7 +369,7 @@ func forLinux() {
 	var modeloAtivo *string = &lin.SnipeitModel12
 
 	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Teclado/Desktop/MacBook/Leito_de_Cartão_Mesa): ")
+	fmt.Println("Digite o Tipo de Ativo (Exemplo:Teclado/Desktop/MacBook/Leitor_de_Cartão_Mesa): ")
 	fmt.Scanf("%v", IDmodelo)
 
 	//identificando o Modelo
@@ -493,30 +452,13 @@ func forLinux() {
 		*IDmodelo = "11"
 	}
 
-	//Input Manual: Status
-	fmt.Println("Digite o Status do Ativo (Padrão: Disponível): ")
-	fmt.Scanf("%v", IDstatus)
+	//Input: Status
+	*IDstatus = "5"
 
-	//Identificando o Status
-	switch *IDstatus {
-	case "Disponivel":
-		*IDstatus = "5"
-	case "Indisponivel":
-		*IDstatus = "6"
-	case "Ocupado":
-		*IDstatus = "7"
-	case "Descartado":
-		*IDstatus = "4"
-	default:
-		*IDstatus = "5"
-	}
-
-	//Inputs Manuais: Asset Tag, Name, Modelo do Ativo
-	fmt.Println("Digite uma Marcação do Ativo única (Exemplo: T008921): ")
-	fmt.Scanf("%v", Assettag)
-	fmt.Println("Digite o Nome do Ativo (Exemplo: Macbook2014/Mac/Macintosh): ")
-	fmt.Scanf("%v", name)
-	fmt.Println("Digite o Modelo do Ativo (Exemplo: Air): ")
+	//Inputs: Asset Tag, Name, Modelo do Ativo
+	*Assettag = lin.SnipeitHostname10
+	*name = lin.SnipeitHostname10
+	fmt.Println("Digite o Modelo do Ativo (Exemplo: AXL033): ")
 	fmt.Scanf("%v", modeloAtivo)
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
@@ -524,13 +466,15 @@ func forLinux() {
 	fmt.Printf("ASSET TAG: %v\n", lin.AssetTag)
 	fmt.Printf("TIPO DE ATIVO: %v\n", lin.ModelID)
 	fmt.Printf("MODELO DO ATIVO: %v\n", lin.SnipeitModel12)
-	fmt.Printf("STATUS: %v\n\n", lin.StatusID)
+	fmt.Printf("STATUS ID: (%v) Disponível [Padrão]\n\n", lin.StatusID)
 	fmt.Printf("DESCRIÇÃO DO ATIVO\n")
 	fmt.Printf("HOSTNAME: %v\n", lin.SnipeitHostname10)
 	fmt.Printf("S.O.: %v\n", lin.SnipeitSo8)
 	fmt.Printf("CPU: %v\n", lin.SnipeitCPU11)
 	fmt.Printf("MEMORIA RAM: %v\n", lin.SnipeitMema3Ria7)
 	fmt.Printf("DISCO: %v\n\n", lin.SnipeitHd9)
+
+	time.Sleep(time.Second * 5)
 
 	fmt.Println("Você deseja enviar essas informações para o inventário Snipeit? (sim/nao)")
 	var answer string
@@ -540,19 +484,7 @@ func forLinux() {
 	case "sim", "s":
 		MacOS.Snipesending(lin)
 	case "nao", "n":
-		fmt.Println("Você deseja apagar os arquivos criados? (sim/nao)")
-		var anotherAnswer string
-		fmt.Scanf("%v", &anotherAnswer)
-
-		switch anotherAnswer {
-		case "sim", "s":
-			wg := &sync.WaitGroup{}
-			wg.Add(1)
-			go MacOS.Clear(wg)
-			wg.Wait()
-		case "nao", "n":
-			fmt.Println("Certo. Fique à Vontade!")
-		}
+		break
 
 	}
 

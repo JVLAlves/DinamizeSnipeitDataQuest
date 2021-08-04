@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"
+	"strings"
 	"sync"
 	"time"
 )
@@ -178,6 +180,19 @@ func Running() {
 	Infos = append(Infos, Linhas[0])
 	fmt.Println(Infos[4])
 	file.Close()
+
+	var infostemp []string
+	infostemp = append(infostemp, Infos[4])
+	re := regexp.MustCompile(`(^\d+\.\d+)`)
+	//fmt.Println("\n\n\n", Infos)
+	for i := 0; i < len(infostemp); i++ {
+		Abc := re.FindAllString(infostemp[i], -1)
+		justString := strings.Join(Abc, "")
+		if justString != "" {
+			Infos[4] = justString
+		}
+		justString = ""
+	}
 
 	return
 }

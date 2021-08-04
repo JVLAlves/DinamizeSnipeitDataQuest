@@ -262,8 +262,4 @@ func MainProgram() {
 	fmt.Println(string(stdout))
 
 	fmt.Println(Infos)
-
-	cmd = exec.Command("rm", "tamanhoDoHd.txt", "SO.txt", "hostname.txt", "tamanhoDoDisco.txt")
-	stdout, _ = cmd.Output()
-	fmt.Println(string(stdout))
 }
