@@ -8,8 +8,16 @@ import (
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Linux"
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/MacOS"
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Windows"
+	"github.com/schollz/progressbar/v3"
 )
 
+func RunningProgressBar(progressbarTotal int, progressPerSecond int) {
+	bar := progressbar.Default(int64(progressbarTotal))
+	for i := 0; i < 100; i++ {
+		bar.Add(1)
+		time.Sleep(time.Duration(progressPerSecond) * time.Second)
+	}
+}
 func forMacOs() {
 
 	//Criando Arquivos via Goroutines
@@ -495,6 +503,8 @@ func main() {
 	fmt.Println("Qual o seus sistema operacional? (MacOS/Linux/Windows)")
 	var resposta string
 	fmt.Scanf("%v\n", &resposta)
+
+	RunningProgressBar(100, 2)
 
 	switch resposta {
 	case "MacOS", "Macos", "MacOs", "macOS", "macos", "MACOS":
