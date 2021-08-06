@@ -11,8 +11,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"regexp"
-	"strings"
 	"sync"
 	"time"
 )
@@ -181,18 +179,17 @@ func Running() {
 	fmt.Println(Infos[4])
 	file.Close()
 
-	var infostemp []string
-	infostemp = append(infostemp, Infos[4])
-	re := regexp.MustCompile(`(^\d+\.\d+)`)
-	//fmt.Println("\n\n\n", Infos)
-	for i := 0; i < len(infostemp); i++ {
-		Abc := re.FindAllString(infostemp[i], -1)
-		justString := strings.Join(Abc, "")
-		if justString != "" {
-			Infos[4] = justString
-		}
-		justString = ""
+	//Animação de Apagando Junk Files
+	fmt.Print("\nApagando Junk Files")
+	for i := 0; i < 4; i++ {
+		time.Sleep(time.Second * 1)
+		fmt.Print(".")
 	}
+
+	//Apagando Junk Files
+	cmd := exec.Command("rm", "uname.out", "sysctl.out", "hostinfo.out", "diskutil.out", "sw_vers.out")
+	stdout, _ := cmd.Output()
+	fmt.Println(string(stdout))
 
 	return
 }
@@ -258,17 +255,6 @@ func Snipesending(mac MacOSt) {
 	//Printando o Response
 	fmt.Println("Response do POST:", response)
 
-	//Animação de Apagando Junk Files
-	fmt.Print("\nApagando Junk Files")
-	for i := 0; i < 4; i++ {
-		time.Sleep(time.Second * 1)
-		fmt.Print(".")
-	}
-
-	//Apagando Junk Files
-	cmd := exec.Command("rm", "uname.out", "sysctl.out", "hostinfo.out", "diskutil.out", "sw_vers.out")
-	stdout, _ := cmd.Output()
-	fmt.Println(string(stdout))
 }
 
 /*Apaga os arquivos criados no inicio do código.

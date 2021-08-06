@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"runtime"
 	"sync"
+	"time"
 
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Linux"
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/MacOS"
@@ -503,17 +506,30 @@ func forLinux() {
 
 func main() {
 
-	fmt.Println("Qual o seus sistema operacional? (MacOS/Linux/Windows)")
-	var resposta string
-	fmt.Scanf("%v\n", &resposta)
+	fmt.Print("Dectecting your Operating System")
+	for i := 0; i < 4; i++ {
+		time.Sleep(time.Second * 1)
+		fmt.Print(".")
+	}
 
-	switch resposta {
-	case "MacOS", "Macos", "MacOs", "macOS", "macos", "MACOS":
+	switch runtime.GOOS {
+	case "darwin":
 		forMacOs()
-	case "Linux", "linux", "LINUX":
+	case "linux":
 		forLinux()
 
-	case "Windows", "WINDOWS", "windows":
+	case "windows":
 		forWindows()
+	default:
+		fmt.Println("ERROR! Could not found the Operating System!")
+		time.Sleep(time.Second * 1)
+		fmt.Println("Aborting")
+		for i := 0; i < 4; i++ {
+			time.Sleep(time.Second * 1)
+			fmt.Print(".")
+		}
+		time.Sleep(time.Second * 3)
+		log.Fatal()
 	}
+
 }
