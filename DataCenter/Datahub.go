@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"runtime"
 	"sync"
 	"time"
@@ -11,6 +14,123 @@ import (
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/MacOS"
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Windows"
 )
+
+type ErrorT struct {
+	Status   string `json:"status"`
+	Messages string `json:"messages"`
+	Payload  string `json:"payload"`
+}
+
+type IDT struct {
+	ID string `json:"id"`
+}
+
+func Getidbytag(assettag string) {
+	url := "http://10.20.1.79:8001/api/v1/hardware/bytag/" + assettag
+	fmt.Printf("URL: %v\n", url)
+	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", bearer)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("error (1): %s", err)
+	}
+
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		log.Println("Error on parsing response.\n[ERROR] -", err)
+	}
+
+	//coventendo Body em bytes para Body em String
+	bodyString := string(body)
+	log.Print(bodyString)
+
+	// Unmarshal do resultado do response
+	response := IDT{}
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		log.Printf("Reading body failed: %s", err)
+	}
+
+}
+
+func Getbytag(assettag string) {
+	url := "http://10.20.1.79:8001/api/v1/hardware/bytag/" + assettag
+	fmt.Printf("URL: %v\n", url)
+	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", bearer)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("error (1): %s", err)
+	}
+
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		log.Println("Error on parsing response.\n[ERROR] -", err)
+	}
+
+	//coventendo Body em bytes para Body em String
+	bodyString := string(body)
+	log.Print(bodyString)
+
+	// Unmarshal do resultado do response
+	response := MacOS.MacOSt{}
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		log.Printf("Reading body failed: %s", err)
+	}
+}
+
+func Verifybytag(assettag string) bool {
+
+	url := "http://10.20.1.79:8001/api/v1/hardware/bytag/" + assettag
+	fmt.Printf("URL: %v\n", url)
+	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", bearer)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("error (1): %s", err)
+	}
+
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		log.Println("Error on parsing response.\n[ERROR] -", err)
+	}
+
+	//coventendo Body em bytes para Body em String
+	bodyString := string(body)
+	log.Print(bodyString)
+
+	// Unmarshal do resultado do response
+	response := ErrorT{}
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		log.Printf("Reading body failed: %s", err)
+	}
+
+	blankspace := ErrorT{}
+	//Printando o Response
+	if response == blankspace {
+		return false
+
+	} else {
+		return true
+	}
+}
 
 func forMacOs() {
 
@@ -79,80 +199,12 @@ func forMacOs() {
 
 	//identificando o Modelo
 	switch *IDmodelo {
-	case "Leitor_de_Cartão_Mesa":
-		*IDmodelo = "1"
-	case "Leitor_de_Cartão_Porta":
-		*IDmodelo = "2"
-	case "Mouse_Sem_Fio":
-		*IDmodelo = "3"
-	case "Roteador":
-		*IDmodelo = "4"
-	case "Roteador_Wireless":
-		*IDmodelo = "5"
 	case "Notebook":
 		*IDmodelo = "6"
-	case "Celular_Samsumg":
-		*IDmodelo = "7"
 	case "Desktop":
 		*IDmodelo = "8"
-	case "Vostro":
-		*IDmodelo = "9"
-	case "Bravia":
-		*IDmodelo = "10"
-	case "Default":
-		*IDmodelo = "11"
-	case "DP720":
-		*IDmodelo = "12"
-	case "Telefone_Grandstream":
-		*IDmodelo = "13"
-	case "NP350":
-		*IDmodelo = "14"
-	case "Samsung_Default":
-		*IDmodelo = "15"
-	case "NP530":
-		*IDmodelo = "16"
-	case "NP370":
-		*IDmodelo = "17"
-	case "Ideapad":
-		*IDmodelo = "18"
-	case "P 250":
-		*IDmodelo = "19"
-	case "Inspirion":
-		*IDmodelo = "20"
-	case "Asus_X":
-		*IDmodelo = "21"
 	case "MacBook":
 		*IDmodelo = "22"
-	case "SMS":
-		*IDmodelo = "23"
-	case "OfficeJet":
-		*IDmodelo = "24"
-	case "LaserJet":
-		*IDmodelo = "25"
-	case "Asus":
-		*IDmodelo = "26"
-	case "D11":
-		*IDmodelo = "27"
-	case "XPS":
-		*IDmodelo = "28"
-	case "C3":
-		*IDmodelo = "29"
-	case "Multilaser_Desk":
-		*IDmodelo = "30"
-	case "Zelman_Desk":
-		*IDmodelo = "31"
-	case "TV_LG":
-		*IDmodelo = "32"
-	case "Braviaa":
-		*IDmodelo = "33"
-	case "AOC":
-		*IDmodelo = "34"
-	case "Dell":
-		*IDmodelo = "35"
-	case "Flantron":
-		*IDmodelo = "36"
-	case "Samsung":
-		*IDmodelo = "37"
 	default:
 		*IDmodelo = "11"
 	}
@@ -229,80 +281,12 @@ func forWindows() {
 
 	//identificando o Modelo
 	switch *IDmodelo {
-	case "Leitor_de_Cartão_Mesa":
-		*IDmodelo = "1"
-	case "Leitor_de_Cartão_Porta":
-		*IDmodelo = "2"
-	case "Mouse_Sem_Fio":
-		*IDmodelo = "3"
-	case "Roteador":
-		*IDmodelo = "4"
-	case "Roteador_Wireless":
-		*IDmodelo = "5"
 	case "Notebook":
 		*IDmodelo = "6"
-	case "Celular_Samsumg":
-		*IDmodelo = "7"
 	case "Desktop":
 		*IDmodelo = "8"
-	case "Vostro":
-		*IDmodelo = "9"
-	case "Bravia":
-		*IDmodelo = "10"
-	case "Default":
-		*IDmodelo = "11"
-	case "DP720":
-		*IDmodelo = "12"
-	case "Telefone_Grandstream":
-		*IDmodelo = "13"
-	case "NP350":
-		*IDmodelo = "14"
-	case "Samsung_Default":
-		*IDmodelo = "15"
-	case "NP530":
-		*IDmodelo = "16"
-	case "NP370":
-		*IDmodelo = "17"
-	case "Ideapad":
-		*IDmodelo = "18"
-	case "P 250":
-		*IDmodelo = "19"
-	case "Inspirion":
-		*IDmodelo = "20"
-	case "Asus_X":
-		*IDmodelo = "21"
 	case "MacBook":
 		*IDmodelo = "22"
-	case "SMS":
-		*IDmodelo = "23"
-	case "OfficeJet":
-		*IDmodelo = "24"
-	case "LaserJet":
-		*IDmodelo = "25"
-	case "Asus":
-		*IDmodelo = "26"
-	case "D11":
-		*IDmodelo = "27"
-	case "XPS":
-		*IDmodelo = "28"
-	case "C3":
-		*IDmodelo = "29"
-	case "Multilaser_Desk":
-		*IDmodelo = "30"
-	case "Zelman_Desk":
-		*IDmodelo = "31"
-	case "TV_LG":
-		*IDmodelo = "32"
-	case "Braviaa":
-		*IDmodelo = "33"
-	case "AOC":
-		*IDmodelo = "34"
-	case "Dell":
-		*IDmodelo = "35"
-	case "Flantron":
-		*IDmodelo = "36"
-	case "Samsung":
-		*IDmodelo = "37"
 	default:
 		*IDmodelo = "11"
 	}
@@ -369,6 +353,11 @@ func forLinux() {
 	lin.AssetTag = Linux.Infos[3]
 	lin.Name = Linux.Infos[3]
 
+	if Verifybytag(lin.AssetTag) {
+		fmt.Println("Criando novo ativo...")
+	} else {
+		log.Fatalf("o ativo já existe.")
+	}
 	//Entrada Personalizada
 	var IDmodelo *string = &lin.ModelID
 	var IDstatus *string = &lin.StatusID
@@ -380,80 +369,12 @@ func forLinux() {
 
 	//identificando o Modelo
 	switch *IDmodelo {
-	case "Leitor_de_Cartão_Mesa":
-		*IDmodelo = "1"
-	case "Leitor_de_Cartão_Porta":
-		*IDmodelo = "2"
-	case "Mouse_Sem_Fio":
-		*IDmodelo = "3"
-	case "Roteador":
-		*IDmodelo = "4"
-	case "Roteador_Wireless":
-		*IDmodelo = "5"
 	case "Notebook":
 		*IDmodelo = "6"
-	case "Celular_Samsumg":
-		*IDmodelo = "7"
 	case "Desktop":
 		*IDmodelo = "8"
-	case "Vostro":
-		*IDmodelo = "9"
-	case "Bravia":
-		*IDmodelo = "10"
-	case "Default":
-		*IDmodelo = "11"
-	case "DP720":
-		*IDmodelo = "12"
-	case "Telefone_Grandstream":
-		*IDmodelo = "13"
-	case "NP350":
-		*IDmodelo = "14"
-	case "Samsung_Default":
-		*IDmodelo = "15"
-	case "NP530":
-		*IDmodelo = "16"
-	case "NP370":
-		*IDmodelo = "17"
-	case "Ideapad":
-		*IDmodelo = "18"
-	case "P 250":
-		*IDmodelo = "19"
-	case "Inspirion":
-		*IDmodelo = "20"
-	case "Asus_X":
-		*IDmodelo = "21"
 	case "MacBook":
 		*IDmodelo = "22"
-	case "SMS":
-		*IDmodelo = "23"
-	case "OfficeJet":
-		*IDmodelo = "24"
-	case "LaserJet":
-		*IDmodelo = "25"
-	case "Asus":
-		*IDmodelo = "26"
-	case "D11":
-		*IDmodelo = "27"
-	case "XPS":
-		*IDmodelo = "28"
-	case "C3":
-		*IDmodelo = "29"
-	case "Multilaser_Desk":
-		*IDmodelo = "30"
-	case "Zelman_Desk":
-		*IDmodelo = "31"
-	case "TV_LG":
-		*IDmodelo = "32"
-	case "Braviaa":
-		*IDmodelo = "33"
-	case "AOC":
-		*IDmodelo = "34"
-	case "Dell":
-		*IDmodelo = "35"
-	case "Flantron":
-		*IDmodelo = "36"
-	case "Samsung":
-		*IDmodelo = "37"
 	default:
 		*IDmodelo = "11"
 	}
