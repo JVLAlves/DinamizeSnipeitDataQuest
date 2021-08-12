@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"runtime"
 	"strconv"
 	"strings"
@@ -15,6 +17,7 @@ import (
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Linux"
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/MacOS"
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Windows"
+	functions "github.com/JVLAlves/DinamizeSnipeitDataQuest/Utilities"
 )
 
 type PatchRespose struct {
@@ -229,12 +232,13 @@ func Getbytag(assettag string, ativo MacOS.MacOSt) (Patchrequest string, Needpat
 	req.Header.Add("Authorization", bearer)
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Printf("error (1): %s", err)
+		log.Fatalf("Falha de conexão com o Host Snipeit.")
 	}
 
 	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
 
+	body, _ := ioutil.ReadAll(res.Body)
+	io.MultiReader()
 	if err != nil {
 		log.Println("Error on parsing response.\n[ERROR] -", err)
 	}
@@ -276,6 +280,7 @@ func Getbytag(assettag string, ativo MacOS.MacOSt) (Patchrequest string, Needpat
 
 	//Verifica as disparidades, destacando-as e criando o Patchrequest.
 	if Analyser != ativo {
+		log.Println("Disparidades encontradas.")
 		fmt.Println("Disparidades encontradas!")
 		fmt.Printf("Aprofundando análises")
 		for i := 0; i < 4; i++ {
@@ -286,6 +291,7 @@ func Getbytag(assettag string, ativo MacOS.MacOSt) (Patchrequest string, Needpat
 		for i := 0; i < len(AnalyserIndex); i++ {
 			if AnalyserIndex[i] != AtivoIndex[i] {
 				fmt.Printf("\nDisparidade encontrada no Index[%v].\n", i)
+				log.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
 				fmt.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
 				switch i {
 				case 0:
@@ -691,31 +697,15 @@ func forLinux() {
 
 	//Verificando a existência de um ativo semelhante no inventário Snipe it
 	if Verifybytag(lin.AssetTag) {
-		fmt.Println("Esse ativo ainda não consta no inventário.\nVocê deseja enviar essas informações para o inventário Snipeit? (sim/nao)")
-		var answer string
-		fmt.Scanf("%v", &answer)
+		log.Println("Os dados do Ativo Criado não constam no sistema.")
+		fmt.Println("Enviando Ativo para o Snipeit ")
 
-		switch answer {
-		case "sim", "s":
-			MacOS.Snipesending(lin)
-		case "nao", "n":
-			fmt.Println("Você deseja apagar os arquivos criados? (sim/nao)")
-			var anotherAnswer string
-			fmt.Scanf("%v", &anotherAnswer)
-
-			switch anotherAnswer {
-			case "sim", "s":
-				wg := &sync.WaitGroup{}
-				wg.Add(1)
-				go MacOS.Clear(wg)
-				wg.Wait()
-			case "nao", "n":
-				fmt.Println("Certo. Fique à Vontade!")
-			}
-
-		}
+		MacOS.Snipesending(lin)
+		log.Printf("NOVO ATIVO: %v", Linux.Infos)
+		log.Println("Ativo Criado enviado para o sistema.")
 
 	} else {
+		log.Println("Um Ativo semelhante foi encontrado no sistema.")
 		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
 		for i := 0; i < 4; i++ {
 			time.Sleep(time.Second * 1)
@@ -730,6 +720,7 @@ func forLinux() {
 			Patchbyid(id, patch)
 
 		} else {
+			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
 			fmt.Println("\nSem alterações")
 		}
 	}
@@ -738,6 +729,12 @@ func forLinux() {
 
 //função principal
 func main() {
+	logname := "logs" + functions.Today() + ".txt"
+	file, err := os.OpenFile(logname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.SetOutput(file)
 
 	//mensagem de abertura
 	fmt.Print("Dectecting your Operating System")
@@ -745,6 +742,8 @@ func main() {
 		time.Sleep(time.Second * 1)
 		fmt.Print(".")
 	}
+
+	log.Printf("\nInicio de execução.\n")
 
 	//Identificando sistema operacional
 	switch runtime.GOOS {
@@ -769,5 +768,6 @@ func main() {
 
 	//mensagem de encerramento
 	fmt.Println("\n\nObrigado pela paciência! (FIM)")
+	log.Printf("\nFim de execução.\n")
 
 }

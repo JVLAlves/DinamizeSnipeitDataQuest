@@ -13,7 +13,7 @@ func Today() (Daytime string) {
 	Month := strconv.Itoa(int(month))
 	Year := strconv.Itoa(years)
 
-	Daytime = "_" + Day + "_" + Month + "_" + Year + "_"
+	Daytime = "_" + Day + "_" + Month + "_" + Year
 
 	return Daytime
 
