@@ -8,18 +8,20 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Linux"
-	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/MacOS"
-	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Windows"
+	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/Linux"
+	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/MacOS"
+	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/Windows"
 	functions "github.com/JVLAlves/DinamizeSnipeitDataQuest/Utilities"
 )
+
+//IP do inventário Snipeit
+var IP string = "10.20.1.79:8001"
 
 type PatchRespose struct {
 	Status   string `json:"status"`
@@ -184,8 +186,8 @@ type IDT struct {
 
 /*Busca o ID do Ativo Existente.
 Ele recebe o Asset Tag do Ativo Existente e retorna o ID int*/
-func Getidbytag(assettag string) (ID int) {
-	url := "http://10.20.1.79:8001/api/v1/hardware/bytag/" + assettag
+func Getidbytag(assettag string, IP string) (ID int) {
+	url := "http://" + IP + "/api/v1/hardware/bytag/" + assettag
 	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -224,8 +226,8 @@ Ele recebe o Asset Tag único do Ativo existente e a variável que contém o tip
 Ao comparar ambos A. Existente e A. Criado ele destaca as disparidades e as retorna  em uma string Patchrequest, assim como um bool Needpatching que afirma se é necessário um PATCH ou não.
 
 OBS: Patchrequest é um JSON padronizado especificamente para o envio através do método PATCH.*/
-func Getbytag(assettag string, ativo MacOS.MacOSt) (Patchrequest string, Needpatching bool) {
-	url := "http://10.20.1.79:8001/api/v1/hardware/bytag/" + assettag
+func Getbytag(IP string, assettag string, ativo MacOS.MacOSt) (Patchrequest string, Needpatching bool) {
+	url := "http://" + IP + "/api/v1/hardware/bytag/" + assettag
 	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -332,9 +334,9 @@ func Getbytag(assettag string, ativo MacOS.MacOSt) (Patchrequest string, Needpat
 }
 
 //Envia alterações feitas no ativo existente no inventário através de seu ID.
-func Patchbyid(id int, Patchresquest string) {
+func Patchbyid(id int, IP string, Patchresquest string) {
 	strid := strconv.Itoa(id)
-	url := "http://10.20.1.79:8001/api/v1/hardware/" + strid
+	url := "http://" + IP + "/api/v1/hardware/" + strid
 
 	payload := strings.NewReader(Patchresquest)
 	req, err := http.NewRequest("PATCH", url, payload)
@@ -364,9 +366,9 @@ func Patchbyid(id int, Patchresquest string) {
 }
 
 //Verifica se ativo existe procurando-o (GET) no inventário através do seu Asset Tag único.
-func Verifybytag(assettag string) bool {
+func Verifybytag(assettag string, IP string) bool {
 
-	url := "http://10.20.1.79:8001/api/v1/hardware/bytag/" + assettag
+	url := "http://" + IP + "/api/v1/hardware/bytag/" + assettag
 	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -422,11 +424,28 @@ func forMacOs() {
 	//Populando Struct MacOSt
 	mac.SnipeitCPU11 = MacOS.Infos[1]
 	mac.SnipeitMema3Ria7 = MacOS.Infos[2]
-	mac.SnipeitSo8 = MacOS.Infos[4]
 	mac.SnipeitHostname10 = MacOS.Infos[0]
 	mac.SnipeitHd9 = MacOS.Infos[3]
-	mac.AssetTag = MacOS.Infos[0]
 	mac.Name = MacOS.Infos[0]
+
+	mac.SnipeitMema3Ria7 = functions.RegexThis(`(^\d{1,3})`, MacOS.Infos[2]) + "GB"
+
+	mac.AssetTag = functions.RegexThis(`\d`, MacOS.Infos[0])
+	if mac.AssetTag == "" {
+		mac.AssetTag = "No Asset Tag"
+		log.Printf("Nenhum Asset Tag foi colocado, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", MacOS.Infos[0])
+
+	}
+
+	SOregexed := functions.RegexThis(`(^\d{2}\.\d+)`, MacOS.Infos[4])
+	numSO, err := strconv.ParseFloat(SOregexed, 64)
+	if err != nil {
+		log.Fatalf("Erro na conversão do S.O. para float")
+	}
+
+	if numSO >= 11.4 && numSO < 12.0 {
+		mac.SnipeitSo8 = "11.4"
+	}
 
 	//Alternando Versão Númerica para Versão Nominal
 	switch mac.SnipeitSo8 {
@@ -494,7 +513,7 @@ func forMacOs() {
 	fmt.Printf("DISCO: %v\n\n", mac.SnipeitHd9)
 
 	//Verificando a existência de um ativo semelhante no inventário Snipe it
-	if Verifybytag(mac.AssetTag) {
+	if Verifybytag(mac.AssetTag, IP) {
 		log.Println("Os dados do Ativo Criado não constam no sistema.")
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
@@ -509,13 +528,13 @@ func forMacOs() {
 			time.Sleep(time.Second * 1)
 			fmt.Print(".")
 		}
-		patch, boolean := Getbytag(mac.AssetTag, mac)
+		patch, boolean := Getbytag(IP, mac.AssetTag, mac)
 		if boolean {
 			fmt.Println("\nPATCH necessário.")
 			fmt.Println("\nExecutando PATCH RESQUEST.")
 			time.Sleep(time.Second * 3)
-			id := Getidbytag(mac.AssetTag)
-			Patchbyid(id, patch)
+			id := Getidbytag(mac.AssetTag, IP)
+			Patchbyid(id, IP, patch)
 
 		} else {
 			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
@@ -537,9 +556,16 @@ func forWindows() {
 	win.SnipeitMema3Ria7 = Windows.Infos[2]
 	win.SnipeitSo8 = Windows.Infos[1]
 	win.SnipeitHostname10 = Windows.Infos[0]
-	win.SnipeitHd9 = Windows.Infos[4]
-	win.AssetTag = Windows.Infos[0]
 	win.Name = Windows.Infos[0]
+
+	win.AssetTag = functions.RegexThis(`\d`, Windows.Infos[0])
+	if win.AssetTag == "" {
+		win.AssetTag = "No Asset Tag"
+		log.Printf("Nenhum Asset Tag foi colocado, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", Windows.Infos[0])
+
+	}
+
+	win.SnipeitHd9 = functions.RegexThis(`(^\d{3})`, Windows.Infos[4]) + "GB"
 
 	//Entrada Personalizada
 	var IDmodelo *string = &win.ModelID
@@ -579,7 +605,7 @@ func forWindows() {
 	fmt.Printf("DISCO: %v\n\n", win.SnipeitHd9)
 
 	//Verificando a existência de um ativo semelhante no inventário Snipe it
-	if Verifybytag(win.AssetTag) {
+	if Verifybytag(win.AssetTag, IP) {
 		log.Println("Os dados do Ativo Criado não constam no sistema.")
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
@@ -594,13 +620,13 @@ func forWindows() {
 			time.Sleep(time.Second * 1)
 			fmt.Print(".")
 		}
-		patch, boolean := Getbytag(win.AssetTag, win)
+		patch, boolean := Getbytag(IP, win.AssetTag, win)
 		if boolean {
 			fmt.Println("\nPATCH necessário.")
 			fmt.Println("\nExecutando PATCH RESQUEST.")
 			time.Sleep(time.Second * 3)
-			id := Getidbytag(win.AssetTag)
-			Patchbyid(id, patch)
+			id := Getidbytag(win.AssetTag, IP)
+			Patchbyid(id, IP, patch)
 
 		} else {
 			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
@@ -621,25 +647,23 @@ func forLinux() {
 
 	//Populando Struct MacOSt
 	lin.SnipeitCPU11 = Linux.Infos[0]
-	//lin.SnipeitMema3Ria7 = Linux.Infos[1]
 	lin.SnipeitSo8 = Linux.Infos[2]
 	lin.SnipeitHostname10 = Linux.Infos[3]
-	//lin.SnipeitHd9 = Linux.Infos[4]
-	//lin.AssetTag = Linux.Infos[3]
+
 	lin.Name = Linux.Infos[3]
-	re1 := regexp.MustCompile(`(^\d{3}[,.]\d?)`)
-	regexHD := re1.FindAllString(Linux.Infos[4], -1)
-	interHD := strings.Join(regexHD, "")
+	interHD := functions.RegexThis(`(^\d{3}[,.]\d?)`, Linux.Infos[4])
 	indexHD := strings.Split(interHD, ",")
 	lin.SnipeitHd9 = strings.Join(indexHD, ".") + "GB"
 
-	re2 := regexp.MustCompile(`\d`)
-	regexmem := re2.FindAllString(Linux.Infos[1], -1)
-	intermem := strings.Join(regexmem, "")
+	intermem := functions.RegexThis(`\d`, Linux.Infos[1])
 	lin.SnipeitMema3Ria7 = intermem + "GB"
 
-	regextag := re2.FindAllString(Linux.Infos[3], -1)
-	lin.AssetTag = strings.Join(regextag, "")
+	lin.AssetTag = functions.RegexThis(`\d`, Linux.Infos[3])
+	if lin.AssetTag == "" {
+		lin.AssetTag = "No Asset Tag"
+		log.Printf("Nenhum Asset Tag foi colocado, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", Linux.Infos[0])
+
+	}
 
 	//Entrada Personalizada
 	var IDmodelo *string = &lin.ModelID
@@ -679,7 +703,7 @@ func forLinux() {
 	fmt.Printf("DISCO: %v\n\n", lin.SnipeitHd9)
 
 	//Verificando a existência de um ativo semelhante no inventário Snipe it
-	if Verifybytag(lin.AssetTag) {
+	if Verifybytag(lin.AssetTag, IP) {
 		log.Println("Os dados do Ativo Criado não constam no sistema.")
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
@@ -694,13 +718,13 @@ func forLinux() {
 			time.Sleep(time.Second * 1)
 			fmt.Print(".")
 		}
-		patch, boolean := Getbytag(lin.AssetTag, lin)
+		patch, boolean := Getbytag(IP, lin.AssetTag, lin)
 		if boolean {
 			fmt.Println("\nPATCH necessário.")
 			fmt.Println("\nExecutando PATCH RESQUEST.")
 			time.Sleep(time.Second * 3)
-			id := Getidbytag(lin.AssetTag)
-			Patchbyid(id, patch)
+			id := Getidbytag(lin.AssetTag, IP)
+			Patchbyid(id, IP, patch)
 
 		} else {
 			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
