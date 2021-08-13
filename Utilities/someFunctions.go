@@ -1,7 +1,9 @@
 package functions
 
 import (
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -17,4 +19,11 @@ func Today() (Daytime string) {
 
 	return Daytime
 
+}
+
+func RegexThis(regex string, target string) (result string) {
+	re := regexp.MustCompile(regex)
+	filter := re.FindAllString(target, -1)
+	dojoin := strings.Join(filter, "")
+	return dojoin
 }
