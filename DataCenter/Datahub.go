@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -192,7 +193,7 @@ func Getidbytag(assettag string) (ID int) {
 	req.Header.Add("Authorization", bearer)
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Printf("error (1): %s", err)
+		log.Fatalf("Falha de conexão com o Host Snipeit.")
 	}
 
 	defer res.Body.Close()
@@ -347,8 +348,7 @@ func Patchbyid(id int, Patchresquest string) {
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Println("err", err)
-		log.Fatalf("Client Error")
+		log.Fatalf("Falha de conexão com o Host Snipeit.")
 	}
 
 	defer res.Body.Close()
@@ -374,7 +374,7 @@ func Verifybytag(assettag string) bool {
 	req.Header.Add("Authorization", bearer)
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Printf("error (1): %s", err)
+		log.Fatalf("Falha de conexão com o Host Snipeit.")
 	}
 
 	defer res.Body.Close()
@@ -495,31 +495,15 @@ func forMacOs() {
 
 	//Verificando a existência de um ativo semelhante no inventário Snipe it
 	if Verifybytag(mac.AssetTag) {
-		fmt.Println("Esse ativo ainda não consta no inventário.\nVocê deseja enviar essas informações para o inventário Snipeit? (sim/nao)")
-		var answer string
-		fmt.Scanf("%v", &answer)
+		log.Println("Os dados do Ativo Criado não constam no sistema.")
+		fmt.Println("Enviando Ativo para o Snipeit ")
 
-		switch answer {
-		case "sim", "s":
-			MacOS.Snipesending(mac)
-		case "nao", "n":
-			fmt.Println("Você deseja apagar os arquivos criados? (sim/nao)")
-			var anotherAnswer string
-			fmt.Scanf("%v", &anotherAnswer)
-
-			switch anotherAnswer {
-			case "sim", "s":
-				wg := &sync.WaitGroup{}
-				wg.Add(1)
-				go MacOS.Clear(wg)
-				wg.Wait()
-			case "nao", "n":
-				fmt.Println("Certo. Fique à Vontade!")
-			}
-
-		}
+		MacOS.Snipesending(mac)
+		log.Printf("NOVO ATIVO: %v", MacOS.Infos)
+		log.Println("Ativo Criado enviado para o sistema.")
 
 	} else {
+		log.Println("Um Ativo semelhante foi encontrado no sistema.")
 		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
 		for i := 0; i < 4; i++ {
 			time.Sleep(time.Second * 1)
@@ -532,11 +516,12 @@ func forMacOs() {
 			time.Sleep(time.Second * 3)
 			id := Getidbytag(mac.AssetTag)
 			Patchbyid(id, patch)
+
 		} else {
+			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
 			fmt.Println("\nSem alterações")
 		}
 	}
-
 }
 
 //Função de execução do programa em Windows
@@ -595,31 +580,15 @@ func forWindows() {
 
 	//Verificando a existência de um ativo semelhante no inventário Snipe it
 	if Verifybytag(win.AssetTag) {
-		fmt.Println("Esse ativo ainda não consta no inventário.\nVocê deseja enviar essas informações para o inventário Snipeit? (sim/nao)")
-		var answer string
-		fmt.Scanf("%v", &answer)
+		log.Println("Os dados do Ativo Criado não constam no sistema.")
+		fmt.Println("Enviando Ativo para o Snipeit ")
 
-		switch answer {
-		case "sim", "s":
-			MacOS.Snipesending(win)
-		case "nao", "n":
-			fmt.Println("Você deseja apagar os arquivos criados? (sim/nao)")
-			var anotherAnswer string
-			fmt.Scanf("%v", &anotherAnswer)
-
-			switch anotherAnswer {
-			case "sim", "s":
-				wg := &sync.WaitGroup{}
-				wg.Add(1)
-				go MacOS.Clear(wg)
-				wg.Wait()
-			case "nao", "n":
-				fmt.Println("Certo. Fique à Vontade!")
-			}
-
-		}
+		MacOS.Snipesending(win)
+		log.Printf("NOVO ATIVO: %v", Windows.Infos)
+		log.Println("Ativo Criado enviado para o sistema.")
 
 	} else {
+		log.Println("Um Ativo semelhante foi encontrado no sistema.")
 		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
 		for i := 0; i < 4; i++ {
 			time.Sleep(time.Second * 1)
@@ -634,6 +603,7 @@ func forWindows() {
 			Patchbyid(id, patch)
 
 		} else {
+			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
 			fmt.Println("\nSem alterações")
 		}
 	}
@@ -651,12 +621,25 @@ func forLinux() {
 
 	//Populando Struct MacOSt
 	lin.SnipeitCPU11 = Linux.Infos[0]
-	lin.SnipeitMema3Ria7 = Linux.Infos[1]
+	//lin.SnipeitMema3Ria7 = Linux.Infos[1]
 	lin.SnipeitSo8 = Linux.Infos[2]
 	lin.SnipeitHostname10 = Linux.Infos[3]
-	lin.SnipeitHd9 = Linux.Infos[4]
-	lin.AssetTag = Linux.Infos[3]
+	//lin.SnipeitHd9 = Linux.Infos[4]
+	//lin.AssetTag = Linux.Infos[3]
 	lin.Name = Linux.Infos[3]
+	re1 := regexp.MustCompile(`(^\d{3}[,.]\d?)`)
+	regexHD := re1.FindAllString(Linux.Infos[4], -1)
+	interHD := strings.Join(regexHD, "")
+	indexHD := strings.Split(interHD, ",")
+	lin.SnipeitHd9 = strings.Join(indexHD, ".") + "GB"
+
+	re2 := regexp.MustCompile(`\d`)
+	regexmem := re2.FindAllString(Linux.Infos[1], -1)
+	intermem := strings.Join(regexmem, "")
+	lin.SnipeitMema3Ria7 = intermem + "GB"
+
+	regextag := re2.FindAllString(Linux.Infos[3], -1)
+	lin.AssetTag = strings.Join(regextag, "")
 
 	//Entrada Personalizada
 	var IDmodelo *string = &lin.ModelID
@@ -769,5 +752,4 @@ func main() {
 	//mensagem de encerramento
 	fmt.Println("\n\nObrigado pela paciência! (FIM)")
 	log.Printf("\nFim de execução.\n")
-
 }
