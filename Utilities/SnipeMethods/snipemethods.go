@@ -1,71 +1,121 @@
-package main
+package snipe
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
-	"runtime"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
-
-	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/Linux"
-	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/MacOS"
-	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/Windows"
-	functions "github.com/JVLAlves/DinamizeSnipeitDataQuest/Utilities"
 )
 
-//IP do inventário Snipeit
-var IP string = "10.20.1.79:8001"
+//Definindo Tipo para popular com as informações do computador.
+type CollectionT struct {
+	ModelID           string `json:"model_id"`
+	StatusID          string `json:"status_id"`
+	AssetTag          string `json:"asset_tag"`
+	Name              string `json:"name"`
+	SnipeitSo8        string `json:"_snipeit_so_8"`
+	SnipeitModel12    string `json:"_snipeit_modelo_12"`
+	SnipeitHostname10 string `json:"_snipeit_hostname_10"`
+	SnipeitHd9        string `json:"_snipeit_hd_9"`
+	SnipeitCPU11      string `json:"_snipeit_cpu_11"`
+	SnipeitMema3Ria7  string `json:"_snipeit_mema3ria_7"`
+}
+
+//Modelo de RESPONSE
+type SnipeITHardwareResponseT struct {
+	Status   string `json:"status"`
+	Messages string `json:"messages"`
+	Payload  struct {
+		ModelID        int    `json:"model_id"`
+		Name           string `json:"name"`
+		Serial         string `json:"serial"`
+		CompanyID      string `json:"company_id"`
+		OrderNumber    string `json:"order_number"`
+		Notes          string `json:"notes"`
+		AssetTag       string `json:"asset_tag"`
+		UserID         int    `json:"user_id"`
+		Archived       string `json:"archived"`
+		Physical       string `json:"physical"`
+		Depreciate     string `json:"depreciate"`
+		StatusID       int    `json:"status_id"`
+		WarrantyMonths string `json:"warranty_months"`
+		PurchaseCost   string `json:"purchase_cost"`
+		PurchaseDate   string `json:"purchase_date"`
+		AssignedTo     string `json:"assigned_to"`
+		SupplierID     string `json:"supplier_id"`
+		Requestable    int    `json:"requestable"`
+		RtdLocationID  string `json:"rtd_location_id"`
+		UpdatedAt      string `json:"updated_at"`
+		CreatedAt      string `json:"created_at"`
+		ID             int    `json:"id"`
+		Model          struct {
+			ID                     int    `json:"id"`
+			Name                   string `json:"name"`
+			ModelNumber            string `json:"model_number"`
+			ManufacturerID         int    `json:"manufacturer_id"`
+			CategoryID             int    `json:"category_id"`
+			CreatedAt              string `json:"created_at"`
+			UpdatedAt              string `json:"updated_at"`
+			DepreciationID         int    `json:"depreciation_id"`
+			Eol                    int    `json:"eol"`
+			Image                  string `json:"image"`
+			DeprecatedAtivoAddress int    `json:"deprecated_Ativo_address"`
+			FieldsetID             int    `json:"fieldset_id"`
+			Notes                  string `json:"notes"`
+			Requestable            int    `json:"requestable"`
+		} `json:"model"`
+	} `json:"payload"`
+}
 
 type PatchRespose struct {
 	Status   string `json:"status"`
 	Messages string `json:"messages"`
 	Payload  struct {
-		ID                  int    `json:"id"`
-		Name                string `json:"name"`
-		AssetTag            string `json:"asset_tag"`
-		ModelID             int    `json:"model_id"`
-		Serial              string `json:"serial"`
-		PurchaseDate        string `json:"purchase_date"`
-		PurchaseCost        string `json:"purchase_cost"`
-		OrderNumber         string `json:"order_number"`
-		AssignedTo          string `json:"assigned_to"`
-		Notes               string `json:"notes"`
-		Image               string `json:"image"`
-		UserID              int    `json:"user_id"`
-		CreatedAt           string `json:"created_at"`
-		UpdatedAt           string `json:"updated_at"`
-		Physical            int    `json:"physical"`
-		DeletedAt           string `json:"deleted_at"`
-		StatusID            int    `json:"status_id"`
-		Archived            int    `json:"archived"`
-		WarrantyMonths      string `json:"warranty_months"`
-		Depreciate          int    `json:"depreciate"`
-		SupplierID          int    `json:"supplier_id"`
-		Requestable         bool   `json:"requestable"`
-		RtdLocationID       int    `json:"rtd_location_id"`
-		Accepted            string `json:"accepted"`
-		LastCheckout        string `json:"last_checkout"`
-		ExpectedCheckin     string `json:"expected_checkin"`
-		CompanyID           string `json:"company_id"`
-		AssignedType        string `json:"assigned_type"`
-		LastAuditDate       string `json:"last_audit_date"`
-		NextAuditDate       string `json:"next_audit_date"`
-		LocationID          int    `json:"location_id"`
-		CheckinCounter      int    `json:"checkin_counter"`
-		CheckoutCounter     int    `json:"checkout_counter"`
-		RequestsCounter     int    `json:"requests_counter"`
-		SnipeitImei1        string `json:"_snipeit_imei_1"`
-		SnipeitPhoneNumber2 string `json:"_snipeit_phone_number_2"`
-		SnipeitRAM3         string `json:"_snipeit_ram_3"`
-		SnipeitCPU4         string `json:"_snipeit_cpu_4"`
-		SnipeitMacAddress5  string `json:"_snipeit_mac_address_5"`
+		ID                   int    `json:"id"`
+		Name                 string `json:"name"`
+		AssetTag             string `json:"asset_tag"`
+		ModelID              int    `json:"model_id"`
+		Serial               string `json:"serial"`
+		PurchaseDate         string `json:"purchase_date"`
+		PurchaseCost         string `json:"purchase_cost"`
+		OrderNumber          string `json:"order_number"`
+		AssignedTo           string `json:"assigned_to"`
+		Notes                string `json:"notes"`
+		Image                string `json:"image"`
+		UserID               int    `json:"user_id"`
+		CreatedAt            string `json:"created_at"`
+		UpdatedAt            string `json:"updated_at"`
+		Physical             int    `json:"physical"`
+		DeletedAt            string `json:"deleted_at"`
+		StatusID             int    `json:"status_id"`
+		Archived             int    `json:"archived"`
+		WarrantyMonths       string `json:"warranty_months"`
+		Depreciate           int    `json:"depreciate"`
+		SupplierID           int    `json:"supplier_id"`
+		Requestable          bool   `json:"requestable"`
+		RtdLocationID        int    `json:"rtd_location_id"`
+		Accepted             string `json:"accepted"`
+		LastCheckout         string `json:"last_checkout"`
+		ExpectedCheckin      string `json:"expected_checkin"`
+		CompanyID            string `json:"company_id"`
+		AssignedType         string `json:"assigned_type"`
+		LastAuditDate        string `json:"last_audit_date"`
+		NextAuditDate        string `json:"next_audit_date"`
+		LocationID           int    `json:"location_id"`
+		CheckinCounter       int    `json:"checkin_counter"`
+		CheckoutCounter      int    `json:"checkout_counter"`
+		RequestsCounter      int    `json:"requests_counter"`
+		SnipeitImei1         string `json:"_snipeit_imei_1"`
+		SnipeitPhoneNumber2  string `json:"_snipeit_phone_number_2"`
+		SnipeitRAM3          string `json:"_snipeit_ram_3"`
+		SnipeitCPU4          string `json:"_snipeit_cpu_4"`
+		SnipeitAtivoAddress5 string `json:"_snipeit_Ativo_address_5"`
 	} `json:"payload"`
 }
 
@@ -226,7 +276,7 @@ Ele recebe o Asset Tag único do Ativo existente e a variável que contém o tip
 Ao comparar ambos A. Existente e A. Criado ele destaca as disparidades e as retorna  em uma string Patchrequest, assim como um bool Needpatching que afirma se é necessário um PATCH ou não.
 
 OBS: Patchrequest é um JSON padronizado especificamente para o envio através do método PATCH.*/
-func Getbytag(IP string, assettag string, ativo MacOS.MacOSt) (Patchrequest string, Needpatching bool) {
+func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest string, Needpatching bool) {
 	url := "http://" + IP + "/api/v1/hardware/bytag/" + assettag
 	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
 	req, _ := http.NewRequest("GET", url, nil)
@@ -249,7 +299,7 @@ func Getbytag(IP string, assettag string, ativo MacOS.MacOSt) (Patchrequest stri
 	//log.Println("\nBilly Lowkão *easteregg*")
 
 	//Variável Struct utilizada para a análise de disparidades entre Ativo Existente no inventário e Ativo Criado pela execução do programa
-	var Analyser MacOS.MacOSt = MacOS.MacOSt{}
+	var Analyser CollectionT = CollectionT{}
 
 	//Variavel que contém os dados do Ativo Existente
 	var responsevar UniversalGetT
@@ -272,10 +322,10 @@ func Getbytag(IP string, assettag string, ativo MacOS.MacOSt) (Patchrequest stri
 	Analyser.SnipeitCPU11 = responsevar.CustomFields.CPU.Value
 	Analyser.SnipeitModel12 = responsevar.CustomFields.Modelo.Value
 
-	//Variável Array com as informacões da Variável Struct de análise
+	//Variável Array com as inforAtivoões da Variável Struct de análise
 	var AnalyserIndex = []string{Analyser.Name, Analyser.AssetTag, Analyser.ModelID, Analyser.StatusID, Analyser.SnipeitMema3Ria7, Analyser.SnipeitSo8, Analyser.SnipeitHd9, Analyser.SnipeitHostname10, Analyser.SnipeitCPU11, Analyser.SnipeitModel12}
 
-	//Variável Array com as informacões da Variável Struct do Ativo Criado
+	//Variável Array com as inforAtivoões da Variável Struct do Ativo Criado
 	var AtivoIndex = []string{ativo.Name, ativo.AssetTag, ativo.ModelID, ativo.StatusID, ativo.SnipeitMema3Ria7, ativo.SnipeitSo8, ativo.SnipeitHd9, ativo.SnipeitHostname10, ativo.SnipeitCPU11, ativo.SnipeitModel12}
 
 	//Variavél Array que contém as alterações pendentes
@@ -370,7 +420,9 @@ func Patchbyid(id int, IP string, Patchresquest string) {
 
 }
 
-//Verifica se ativo existe procurando-o (GET) no inventário através do seu Asset Tag único.
+/*GET
+
+Verifica se ativo existe procurando-o (GET) no inventário através do seu Asset Tag único.*/
 func Verifybytag(assettag string, IP string) bool {
 
 	url := "http://" + IP + "/api/v1/hardware/bytag/" + assettag
@@ -405,380 +457,62 @@ func Verifybytag(assettag string, IP string) bool {
 	}
 }
 
-//Função de execução do programa em MacOS
-func forMacOs() {
+/* POST
 
-	//Criando Arquivos via Goroutines
-	wg := &sync.WaitGroup{}
-	wg.Add(5)
-	go MacOS.Create(wg, "uname", "-n")
-	go MacOS.Create(wg, "sysctl", "-a |grep machdep.cpu.brand_string |awk '{print $2,$3,$4}'")
-	go MacOS.Create(wg, "hostinfo", "|grep memory |awk '{print $4,$5}'")
-	go MacOS.Create(wg, "diskutil", "list |grep disk0s2 | awk '{print $5,$6}'")
-	go MacOS.Create(wg, "sw_vers", "-productVersion")
-	wg.Wait()
+Envia os dados do computador para o inventário no Snipeit. (Essa função recebe a variavel que recebe o tipo struct criado com os dados do computador)*/
+func PostSnipe(Ativo CollectionT, IP string) {
 
-	// Lendo Arquivos
-	MacOS.Running()
+	//URL da API SnipeIt
+	url := "http://" + IP + "/api/v1/hardware"
 
-	//Verificação das informações "Appendadas"
-	fmt.Println(MacOS.Infos)
+	// Token de autentiucação
+	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
 
-	var mac MacOS.MacOSt = MacOS.MacOSt{}
-
-	//Populando Struct MacOSt
-	mac.SnipeitCPU11 = MacOS.Infos[1]
-	mac.SnipeitMema3Ria7 = MacOS.Infos[2]
-	mac.SnipeitHostname10 = MacOS.Infos[0]
-	mac.SnipeitHd9 = MacOS.Infos[3]
-	mac.Name = MacOS.Infos[0]
-
-	mac.SnipeitMema3Ria7 = functions.RegexThis(`(^\d{1,3})`, MacOS.Infos[2]) + "GB"
-
-	mac.AssetTag = functions.RegexThis(`\d`, MacOS.Infos[0])
-	if mac.AssetTag == "" {
-		mac.AssetTag = "No Asset Tag"
-		log.Printf("Nenhum Asset Tag foi colocado, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", MacOS.Infos[0])
-
-	}
-
-	SOregexed := functions.RegexThis(`(^\d{2}\.\d+)`, MacOS.Infos[4])
-	numSO, err := strconv.ParseFloat(SOregexed, 64)
+	//transformando em bytes a variável hw
+	hardwarePostJSON, err := json.Marshal(Ativo)
+	//Tratando o ocasoional erro transformação da variável em byte
 	if err != nil {
-		log.Fatalf("Erro na conversão do S.O. para float")
+		panic(err)
 	}
 
-	if numSO >= 11.4 && numSO < 12.0 {
-		mac.SnipeitSo8 = "11.4"
-	}
+	//POST REQUEST
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(hardwarePostJSON))
 
-	//Alternando Versão Númerica para Versão Nominal
-	switch mac.SnipeitSo8 {
-
-	case "10.7":
-		mac.SnipeitSo8 = "MacOs Lion"
-	case "10.8":
-		mac.SnipeitSo8 = "MacOs Mountain Lion"
-	case "10.9":
-		mac.SnipeitSo8 = "MacOs Mavericks"
-	case "10.10":
-		mac.SnipeitSo8 = "MacOs Yosemite"
-	case "10.11":
-		mac.SnipeitSo8 = "MacOs El Capitan"
-	case "10.12":
-		mac.SnipeitSo8 = "MacOs Sierra"
-	case "10.13":
-		mac.SnipeitSo8 = "MacOs High Sierra"
-	case "10.14":
-		mac.SnipeitSo8 = "MacOs Mojave"
-	case "10.15":
-		mac.SnipeitSo8 = "MacOs Catalina"
-	case "11.4":
-		mac.SnipeitSo8 = "MacOs Big Sur"
-	default:
-		mac.SnipeitSo8 = "MacOs"
-	}
-
-	//Entrada Personalizada
-	var IDmodelo *string = &mac.ModelID
-	var IDstatus *string = &mac.StatusID
-	var modeloAtivo *string = &mac.SnipeitModel12
-
-	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Desktop/MacBook): ")
-	fmt.Scanf("%v", IDmodelo)
-
-	//identificando o Modelo
-	switch *IDmodelo {
-
-	case "Desktop":
-		*IDmodelo = "8"
-		*modeloAtivo = "DNZ-Desktop"
-	case "MacBook":
-		*IDmodelo = "22"
-		*modeloAtivo = "DNZ-Macbook"
-	default:
-		*IDmodelo = "11"
-	}
-
-	//Status ID
-	*IDstatus = "5"
-
-	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
-	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", mac.Name)
-	fmt.Printf("ASSET TAG: %v\n", mac.AssetTag)
-	fmt.Printf("TIPO DE ATIVO: %v\n", mac.ModelID)
-	fmt.Printf("MODELO DO ATIVO: %v\n", mac.SnipeitModel12)
-	fmt.Printf("STATUS: %v\n\n", mac.StatusID)
-	fmt.Printf("DESCRIÇÃO DO ATIVO\n")
-	fmt.Printf("HOSTNAME: %v\n", mac.SnipeitHostname10)
-	fmt.Printf("S.O.: %v\n", mac.SnipeitSo8)
-	fmt.Printf("CPU: %v\n", mac.SnipeitCPU11)
-	fmt.Printf("MEMORIA RAM: %v\n", mac.SnipeitMema3Ria7)
-	fmt.Printf("DISCO: %v\n\n", mac.SnipeitHd9)
-
-	//Verificando a existência de um ativo semelhante no inventário Snipe it
-	if Verifybytag(mac.AssetTag, IP) {
-		log.Println("Os dados do Ativo Criado não constam no sistema.")
-		fmt.Println("Enviando Ativo para o Snipeit ")
-
-		MacOS.Snipesending(mac)
-		log.Printf("NOVO ATIVO: %v", MacOS.Infos)
-		log.Println("Ativo Criado enviado para o sistema.")
-
-	} else {
-		log.Println("Um Ativo semelhante foi encontrado no sistema.")
-		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
-		for i := 0; i < 4; i++ {
-			time.Sleep(time.Second * 1)
-			fmt.Print(".")
-		}
-		patch, boolean := Getbytag(IP, mac.AssetTag, mac)
-		if boolean {
-			fmt.Println("\nPATCH necessário.")
-			fmt.Println("\nExecutando PATCH RESQUEST.")
-			time.Sleep(time.Second * 3)
-			id := Getidbytag(mac.AssetTag, IP)
-			Patchbyid(id, IP, patch)
-
-		} else {
-			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
-			fmt.Println("\nSem alterações")
-		}
-	}
-}
-
-//Função de execução do programa em Windows
-func forWindows() {
-
-	Windows.MainProgram()
-
-	//Essa variavel recebe um Tipo MacOSt, pois é o contrato padrão para a execução do programa
-	var win MacOS.MacOSt = MacOS.MacOSt{}
-
-	//Populando Struct MacOSt
-	win.SnipeitCPU11 = Windows.Infos[3]
-	win.SnipeitMema3Ria7 = Windows.Infos[2]
-	win.SnipeitSo8 = Windows.Infos[1]
-	win.SnipeitHostname10 = Windows.Infos[0]
-	win.Name = Windows.Infos[0]
-
-	win.AssetTag = functions.RegexThis(`\d`, Windows.Infos[0])
-	if win.AssetTag == "" {
-		win.AssetTag = "No Asset Tag"
-		log.Printf("Nenhum Asset Tag foi colocado, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", Windows.Infos[0])
-
-	}
-
-	win.SnipeitHd9 = functions.RegexThis(`(^\d{3})`, Windows.Infos[4]) + "GB"
-
-	//Entrada Personalizada
-	var IDmodelo *string = &win.ModelID
-	var IDstatus *string = &win.StatusID
-	var modeloAtivo *string = &win.SnipeitModel12
-
-	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Desktop/Notebook): ")
-	fmt.Scanf("%v", IDmodelo)
-
-	//identificando o Modelo
-	switch *IDmodelo {
-	case "Notebook":
-		*IDmodelo = "6"
-		*modeloAtivo = "DNZ-Notebook"
-	case "Desktop":
-		*IDmodelo = "8"
-		*modeloAtivo = "DNZ-Desktop"
-	default:
-		*IDmodelo = "11"
-	}
-
-	//Status ID
-	*IDstatus = "5"
-
-	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
-	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", win.Name)
-	fmt.Printf("ASSET TAG: %v\n", win.AssetTag)
-	fmt.Printf("TIPO DE ATIVO: %v\n", win.ModelID)
-	fmt.Printf("MODELO DO ATIVO: %v\n", win.SnipeitModel12)
-	fmt.Printf("STATUS: %v\n\n", win.StatusID)
-	fmt.Printf("DESCRIÇÃO DO ATIVO\n")
-	fmt.Printf("HOSTNAME: %v\n", win.SnipeitHostname10)
-	fmt.Printf("S.O.: %v\n", win.SnipeitSo8)
-	fmt.Printf("CPU: %v\n", win.SnipeitCPU11)
-	fmt.Printf("MEMORIA RAM: %v\n", win.SnipeitMema3Ria7)
-	fmt.Printf("DISCO: %v\n\n", win.SnipeitHd9)
-
-	//Verificando a existência de um ativo semelhante no inventário Snipe it
-	if Verifybytag(win.AssetTag, IP) {
-		log.Println("Os dados do Ativo Criado não constam no sistema.")
-		fmt.Println("Enviando Ativo para o Snipeit ")
-
-		MacOS.Snipesending(win)
-		log.Printf("NOVO ATIVO: %v", Windows.Infos)
-		log.Println("Ativo Criado enviado para o sistema.")
-
-	} else {
-		log.Println("Um Ativo semelhante foi encontrado no sistema.")
-		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
-		for i := 0; i < 4; i++ {
-			time.Sleep(time.Second * 1)
-			fmt.Print(".")
-		}
-		patch, boolean := Getbytag(IP, win.AssetTag, win)
-		if boolean {
-			fmt.Println("\nPATCH necessário.")
-			fmt.Println("\nExecutando PATCH RESQUEST.")
-			time.Sleep(time.Second * 3)
-			id := Getidbytag(win.AssetTag, IP)
-			Patchbyid(id, IP, patch)
-
-		} else {
-			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
-			fmt.Println("\nSem alterações")
-		}
-	}
-
-}
-
-//Função de execução do programa em Linux
-func forLinux() {
-
-	//programa principal para a coleta de informações em Linux
-	Linux.MainProgram()
-
-	//Essa variavel recebe um Tipo MacOSt, pois é o contrato padrão para a execução do programa
-	var lin MacOS.MacOSt = MacOS.MacOSt{}
-
-	//Populando Struct MacOSt
-	lin.SnipeitCPU11 = Linux.Infos[0]
-	lin.SnipeitSo8 = Linux.Infos[2]
-	lin.SnipeitHostname10 = Linux.Infos[3]
-
-	lin.Name = Linux.Infos[3]
-	interHD := functions.RegexThis(`(^\d{3}[,.]\d?)`, Linux.Infos[4])
-	indexHD := strings.Split(interHD, ",")
-	lin.SnipeitHd9 = strings.Join(indexHD, ".") + "GB"
-
-	intermem := functions.RegexThis(`\d`, Linux.Infos[1])
-	lin.SnipeitMema3Ria7 = intermem + "GB"
-
-	lin.AssetTag = functions.RegexThis(`\d`, Linux.Infos[3])
-	if lin.AssetTag == "" {
-		lin.AssetTag = "No Asset Tag"
-		log.Printf("Nenhum Asset Tag foi colocado, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", Linux.Infos[0])
-
-	}
-
-	//Entrada Personalizada
-	var IDmodelo *string = &lin.ModelID
-	var IDstatus *string = &lin.StatusID
-	var modeloAtivo *string = &lin.SnipeitModel12
-
-	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Desktop/Notebook): ")
-	fmt.Scanf("%v", IDmodelo)
-
-	//identificando o Modelo
-	switch *IDmodelo {
-	case "Notebook":
-		*IDmodelo = "6"
-		*modeloAtivo = "DNZ-Notebook"
-	case "Desktop":
-		*IDmodelo = "8"
-		*modeloAtivo = "DNZ-Desktop"
-	default:
-		*IDmodelo = "11"
-	}
-
-	//Status ID
-	*IDstatus = "5"
-
-	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
-	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", lin.Name)
-	fmt.Printf("ASSET TAG: %v\n", lin.AssetTag)
-	fmt.Printf("TIPO DE ATIVO: %v\n", lin.ModelID)
-	fmt.Printf("MODELO DO ATIVO: %v\n", lin.SnipeitModel12)
-	fmt.Printf("STATUS: %v\n\n", lin.StatusID)
-	fmt.Printf("DESCRIÇÃO DO ATIVO\n")
-	fmt.Printf("HOSTNAME: %v\n", lin.SnipeitHostname10)
-	fmt.Printf("S.O.: %v\n", lin.SnipeitSo8)
-	fmt.Printf("CPU: %v\n", lin.SnipeitCPU11)
-	fmt.Printf("MEMORIA RAM: %v\n", lin.SnipeitMema3Ria7)
-	fmt.Printf("DISCO: %v\n\n", lin.SnipeitHd9)
-
-	//Verificando a existência de um ativo semelhante no inventário Snipe it
-	if Verifybytag(lin.AssetTag, IP) {
-		log.Println("Os dados do Ativo Criado não constam no sistema.")
-		fmt.Println("Enviando Ativo para o Snipeit ")
-
-		MacOS.Snipesending(lin)
-		log.Printf("NOVO ATIVO: %v", Linux.Infos)
-		log.Println("Ativo Criado enviado para o sistema.")
-
-	} else {
-		log.Println("Um Ativo semelhante foi encontrado no sistema.")
-		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
-		for i := 0; i < 4; i++ {
-			time.Sleep(time.Second * 1)
-			fmt.Print(".")
-		}
-		patch, boolean := Getbytag(IP, lin.AssetTag, lin)
-		if boolean {
-			fmt.Println("\nPATCH necessário.")
-			fmt.Println("\nExecutando PATCH RESQUEST.")
-			time.Sleep(time.Second * 3)
-			id := Getidbytag(lin.AssetTag, IP)
-			Patchbyid(id, IP, patch)
-
-		} else {
-			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
-			fmt.Println("\nSem alterações")
-		}
-	}
-
-}
-
-//função principal
-func main() {
-	logname := "logs" + functions.Today() + ".txt"
-	file, err := os.OpenFile(logname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	//Tratando o ocasoional erro do POST/REQUEST
 	if err != nil {
-		log.Fatal(err)
-	}
-	log.SetOutput(file)
-
-	//mensagem de abertura
-	fmt.Print("Dectecting your Operating System")
-	for i := 0; i < 4; i++ {
-		time.Sleep(time.Second * 1)
-		fmt.Print(".")
+		panic(err)
 	}
 
-	log.Printf("\nInicio de execução.\n")
+	//adicionando os headers a autorização
+	req.Header.Add("Authorization", bearer)
+	//definindo a formatação do REQUEST
+	req.Header.Add("Content-type", "application/json")
 
-	//Identificando sistema operacional
-	switch runtime.GOOS {
-	case "darwin":
-		forMacOs()
-	case "linux":
-		forLinux()
-
-	case "windows":
-		forWindows()
-	default:
-		fmt.Println("ERROR! Could not found the Operating System!")
-		time.Sleep(time.Second * 1)
-		fmt.Println("Aborting")
-		for i := 0; i < 4; i++ {
-			time.Sleep(time.Second * 1)
-			fmt.Print(".")
-		}
-		time.Sleep(time.Second * 3)
-		log.Fatal()
+	// Send req using http Client
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on request.\n[ERROR] -", err)
 	}
 
-	//mensagem de encerramento
-	fmt.Println("\n\nObrigado pela paciência! (FIM)")
-	log.Printf("\nFim de execução.\n")
+	//fechando o Response após a conclusão do código
+	defer resp.Body.Close()
+
+	//lendo o RESQUEST
+	body, err := ioutil.ReadAll(resp.Body)
+	//Tratando o ocasoional erro do request
+	if err != nil {
+		log.Println("Error on parsing response.\n[ERROR] -", err)
+	}
+
+	// Unmarshal do resultado do response
+	response := SnipeITHardwareResponseT{}
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		log.Printf("Reading body failed: %s", err)
+		return
+	}
+
+	//Printando o Response
+	fmt.Println("Response do POST:", response)
 }
