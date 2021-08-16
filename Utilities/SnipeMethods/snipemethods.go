@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-//Definindo Tipo para popular com as informações do computador.
+//Modelo para coleta e envio de dados do computador.
 type CollectionT struct {
 	ModelID           string `json:"model_id"`
 	StatusID          string `json:"status_id"`
@@ -27,7 +27,7 @@ type CollectionT struct {
 	SnipeitMema3Ria7  string `json:"_snipeit_mema3ria_7"`
 }
 
-//Modelo de RESPONSE
+//Modelo geral de RESPONSE
 type SnipeITHardwareResponseT struct {
 	Status   string `json:"status"`
 	Messages string `json:"messages"`
@@ -73,6 +73,7 @@ type SnipeITHardwareResponseT struct {
 	} `json:"payload"`
 }
 
+//Modelo de respose do método PATCH
 type PatchRespose struct {
 	Status   string `json:"status"`
 	Messages string `json:"messages"`
@@ -119,6 +120,7 @@ type PatchRespose struct {
 	} `json:"payload"`
 }
 
+//Modelo de response do método GET
 type UniversalGetT struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
@@ -224,12 +226,15 @@ type UniversalGetT struct {
 		Delete   bool `json:"delete"`
 	} `json:"available_actions"`
 }
+
+//Modelo de reponse de ERRO
 type ErrorT struct {
 	Status   string `json:"status"`
 	Messages string `json:"messages"`
 	Payload  string `json:"payload"`
 }
 
+//Modelo exclusivo para ID
 type IDT struct {
 	ID int `json:"id"`
 }

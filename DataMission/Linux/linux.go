@@ -35,7 +35,6 @@ func MainProgram() {
 	infostemp = append(infostemp, Linhas[4])
 
 	re := regexp.MustCompile(`(Intel).+`)
-	//fmt.Println("\n\n\n", Infos)
 	for i := 0; i < len(infostemp); i++ {
 		Abc := re.FindAllString(infostemp[i], -1)
 		justString := strings.Join(Abc, "")
@@ -55,8 +54,7 @@ func MainProgram() {
 
 	//Executa o comando Script para escrever a sessão do terminal em arquivo txt (Tamanho do disco)
 	cmd := exec.Command("script", "-c", "free -h |grep Mem |awk '{print $2}'", "tamanhoDoHd.txt")
-	stdout, _ := cmd.Output()
-	fmt.Println(string(stdout))
+	_, _ = cmd.Output()
 
 	// abrindo o arquiuvo criado "tamanhoDoHd.txt"
 	file, err = os.Open("tamanhoDoHd.txt")
@@ -92,8 +90,7 @@ func MainProgram() {
 
 	//Executa o comando Script para escrever a sessão do terminal em arquivo txt (S.O.)
 	cmd = exec.Command("script", "-c", "lsb_release -d |grep Description |awk '{print $2,$3,$4}'", "SO.txt")
-	stdout, _ = cmd.Output()
-	fmt.Println(string(stdout))
+	_, _ = cmd.Output()
 
 	// abrindo o arquiuvo criado "S0.txt"
 	file, err = os.Open("SO.txt")
@@ -129,8 +126,7 @@ func MainProgram() {
 
 	//Executa o comando Script para escrever a sessão do terminal em arquivo txt (Hostname)
 	cmd = exec.Command("script", "-c", "hostname", "hostname.txt")
-	stdout, _ = cmd.Output()
-	fmt.Println(string(stdout))
+	_, _ = cmd.Output()
 
 	// abrindo o arquiuvo criado "Hostname.txt"
 	file, err = os.Open("hostname.txt")
@@ -165,8 +161,7 @@ func MainProgram() {
 
 	//Executa o comando Script para escrever a sessão do terminal em arquivo txt (Tamanho do Disco)
 	cmd = exec.Command("script", "-c", "lsblk |grep disk |awk '{print $4}'", "tamanhoDoDisco.txt")
-	stdout, _ = cmd.Output()
-	fmt.Println(string(stdout))
+	_, _ = cmd.Output()
 
 	// abrindo o arquiuvo criado "tamanhoDoDisco.txt"
 	file, err = os.Open("tamanhoDoDisco.txt")
@@ -198,12 +193,8 @@ func MainProgram() {
 	file.Close()
 
 	cmd = exec.Command("rm", "tamanhoDoHd.txt", "SO.txt", "hostname.txt", "tamanhoDoDisco.txt")
-	stdout, _ = cmd.Output()
-	fmt.Println(string(stdout))
-
-	fmt.Println(Infos)
+	_, _ = cmd.Output()
 
 	cmd = exec.Command("rm", "tamanhoDoHd.txt", "SO.txt", "hostname.txt", "tamanhoDoDisco.txt")
-	stdout, _ = cmd.Output()
-	fmt.Println(string(stdout))
+	_, _ = cmd.Output()
 }
