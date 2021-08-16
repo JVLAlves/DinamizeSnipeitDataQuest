@@ -10,11 +10,11 @@ import (
 	"sync"
 	"time"
 
-	functions "github.com/JVLAlves/Dinamize-DataHub/Utilities/Functions"
-	snipe "github.com/JVLAlves/Dinamize-DataHub/Utilities/SnipeMethods"
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/Linux"
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/MacOS"
 	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/Windows"
+	functions "github.com/JVLAlves/DinamizeSnipeitDataQuest/Utilities/Functions"
+	snipe "github.com/JVLAlves/DinamizeSnipeitDataQuest/Utilities/SnipeMethods"
 )
 
 //IP do inventário Snipeit
