@@ -2,13 +2,25 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"runtime"
+	"strconv"
+	"strings"
 	"sync"
+	"time"
 
-	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Linux"
-	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/MacOS"
-	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataQuest/Windows"
+	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/Linux"
+	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/MacOS"
+	"github.com/JVLAlves/DinamizeSnipeitDataQuest/DataMission/Windows"
+	functions "github.com/JVLAlves/DinamizeSnipeitDataQuest/Utilities/Functions"
+	snipe "github.com/JVLAlves/DinamizeSnipeitDataQuest/Utilities/SnipeMethods"
 )
 
+//IP do inventário Snipeit
+var IP string = "10.20.1.79:8001"
+
+//Função de execução do programa em MacOS
 func forMacOs() {
 
 	//Criando Arquivos via Goroutines
@@ -27,16 +39,33 @@ func forMacOs() {
 	//Verificação das informações "Appendadas"
 	fmt.Println(MacOS.Infos)
 
-	var mac MacOS.MacOSt = MacOS.MacOSt{}
+	var mac snipe.CollectionT = snipe.CollectionT{}
 
 	//Populando Struct MacOSt
 	mac.SnipeitCPU11 = MacOS.Infos[1]
 	mac.SnipeitMema3Ria7 = MacOS.Infos[2]
-	mac.SnipeitSo8 = MacOS.Infos[4]
 	mac.SnipeitHostname10 = MacOS.Infos[0]
 	mac.SnipeitHd9 = MacOS.Infos[3]
-	mac.AssetTag = MacOS.Infos[0]
 	mac.Name = MacOS.Infos[0]
+
+	mac.SnipeitMema3Ria7 = functions.RegexThis(`(^\d{1,3})`, MacOS.Infos[2]) + "GB"
+
+	mac.AssetTag = functions.RegexThis(`\d`, MacOS.Infos[0])
+	if mac.AssetTag == "" {
+		mac.AssetTag = "No Asset Tag"
+		log.Printf("Nenhum Asset Tag foi colocado, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", MacOS.Infos[0])
+
+	}
+
+	SOregexed := functions.RegexThis(`(^\d{2}\.\d+)`, MacOS.Infos[4])
+	numSO, err := strconv.ParseFloat(SOregexed, 64)
+	if err != nil {
+		log.Fatalf("Erro na conversão do S.O. para float")
+	}
+
+	if numSO >= 11.4 && numSO < 12.0 {
+		mac.SnipeitSo8 = "11.4"
+	}
 
 	//Alternando Versão Númerica para Versão Nominal
 	switch mac.SnipeitSo8 {
@@ -71,95 +100,24 @@ func forMacOs() {
 	var modeloAtivo *string = &mac.SnipeitModel12
 
 	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Teclado/Desktop/MacBook/Leito_de_Cartão_Mesa): ")
+	fmt.Println("Digite o Tipo de Ativo (Exemplo:Desktop/MacBook): ")
 	fmt.Scanf("%v", IDmodelo)
 
 	//identificando o Modelo
 	switch *IDmodelo {
-	case "Leitor_de_Cartão_Mesa":
-		*IDmodelo = "1"
-	case "Leitor_de_Cartão_Porta":
-		*IDmodelo = "2"
-	case "Mouse_Sem_Fio":
-		*IDmodelo = "3"
-	case "Roteador":
-		*IDmodelo = "4"
-	case "Roteador_Wireless":
-		*IDmodelo = "5"
-	case "Notebook":
-		*IDmodelo = "6"
-	case "Celular_Samsumg":
-		*IDmodelo = "7"
+
 	case "Desktop":
 		*IDmodelo = "8"
-	case "Vostro":
-		*IDmodelo = "9"
-	case "Bravia":
-		*IDmodelo = "10"
-	case "Default":
-		*IDmodelo = "11"
-	case "DP720":
-		*IDmodelo = "12"
-	case "Telefone_Grandstream":
-		*IDmodelo = "13"
-	case "NP350":
-		*IDmodelo = "14"
-	case "Samsung_Default":
-		*IDmodelo = "15"
-	case "NP530":
-		*IDmodelo = "16"
-	case "NP370":
-		*IDmodelo = "17"
-	case "Ideapad":
-		*IDmodelo = "18"
-	case "P 250":
-		*IDmodelo = "19"
-	case "Inspirion":
-		*IDmodelo = "20"
-	case "Asus_X":
-		*IDmodelo = "21"
+		*modeloAtivo = "DNZ-Desktop"
 	case "MacBook":
 		*IDmodelo = "22"
-	case "SMS":
-		*IDmodelo = "23"
-	case "OfficeJet":
-		*IDmodelo = "24"
-	case "LaserJet":
-		*IDmodelo = "25"
-	case "Asus":
-		*IDmodelo = "26"
-	case "D11":
-		*IDmodelo = "27"
-	case "XPS":
-		*IDmodelo = "28"
-	case "C3":
-		*IDmodelo = "29"
-	case "Multilaser_Desk":
-		*IDmodelo = "30"
-	case "Zelman_Desk":
-		*IDmodelo = "31"
-	case "TV_LG":
-		*IDmodelo = "32"
-	case "Braviaa":
-		*IDmodelo = "33"
-	case "AOC":
-		*IDmodelo = "34"
-	case "Dell":
-		*IDmodelo = "35"
-	case "Flantron":
-		*IDmodelo = "36"
-	case "Samsung":
-		*IDmodelo = "37"
+		*modeloAtivo = "DNZ-Macbook"
 	default:
 		*IDmodelo = "11"
 	}
 
 	//Status ID
 	*IDstatus = "5"
-
-	//Inputs Manuais: Modelo do Ativo
-	fmt.Println("Digite o Modelo do Ativo (Exemplo: Air): ")
-	fmt.Scanf("%v", modeloAtivo)
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
 	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", mac.Name)
@@ -174,46 +132,60 @@ func forMacOs() {
 	fmt.Printf("MEMORIA RAM: %v\n", mac.SnipeitMema3Ria7)
 	fmt.Printf("DISCO: %v\n\n", mac.SnipeitHd9)
 
-	fmt.Println("Você deseja enviar essas informações para o inventário Snipeit? (sim/nao)")
-	var answer string
-	fmt.Scanf("%v", &answer)
+	//Verificando a existência de um ativo semelhante no inventário Snipe it
+	if snipe.Verifybytag(mac.AssetTag, IP) {
+		log.Println("Os dados do Ativo Criado não constam no sistema.")
+		fmt.Println("Enviando Ativo para o Snipeit ")
 
-	switch answer {
-	case "sim", "s":
-		MacOS.Snipesending(mac)
-	case "nao", "n":
-		fmt.Println("Você deseja apagar os arquivos criados? (sim/nao)")
-		var anotherAnswer string
-		fmt.Scanf("%v", &anotherAnswer)
+		snipe.PostSnipe(mac, IP)
+		log.Printf("NOVO ATIVO: %v", MacOS.Infos)
+		log.Println("Ativo Criado enviado para o sistema.")
 
-		switch anotherAnswer {
-		case "sim", "s":
-			wg := &sync.WaitGroup{}
-			wg.Add(1)
-			go MacOS.Clear(wg)
-			wg.Wait()
-		case "nao", "n":
-			fmt.Println("Certo. Fique à Vontade!")
+	} else {
+		log.Println("Um Ativo semelhante foi encontrado no sistema.")
+		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
+		for i := 0; i < 4; i++ {
+			time.Sleep(time.Second * 1)
+			fmt.Print(".")
 		}
+		patch, boolean := snipe.Getbytag(IP, mac.AssetTag, mac)
+		if boolean {
+			fmt.Println("\nPATCH necessário.")
+			fmt.Println("\nExecutando PATCH RESQUEST.")
+			time.Sleep(time.Second * 3)
+			id := snipe.Getidbytag(mac.AssetTag, IP)
+			snipe.Patchbyid(id, IP, patch)
 
+		} else {
+			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
+			fmt.Println("\nSem alterações")
+		}
 	}
 }
 
+//Função de execução do programa em Windows
 func forWindows() {
 
 	Windows.MainProgram()
 
-	//This variable receive a type MacOSt even being Windows. This is because this type is universal, but was named in the MacOS Program.
-	var win MacOS.MacOSt = MacOS.MacOSt{}
+	//Essa variavel recebe um Tipo MacOSt, pois é o contrato padrão para a execução do programa
+	var win snipe.CollectionT = snipe.CollectionT{}
 
 	//Populando Struct MacOSt
 	win.SnipeitCPU11 = Windows.Infos[3]
 	win.SnipeitMema3Ria7 = Windows.Infos[2]
 	win.SnipeitSo8 = Windows.Infos[1]
 	win.SnipeitHostname10 = Windows.Infos[0]
-	win.SnipeitHd9 = Windows.Infos[4]
-	win.AssetTag = Windows.Infos[0]
 	win.Name = Windows.Infos[0]
+
+	win.AssetTag = functions.RegexThis(`\d`, Windows.Infos[0])
+	if win.AssetTag == "" {
+		win.AssetTag = "No Asset Tag"
+		log.Printf("Nenhum Asset Tag foi colocado, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", Windows.Infos[0])
+
+	}
+
+	win.SnipeitHd9 = functions.RegexThis(`(^\d{3})`, Windows.Infos[4]) + "GB"
 
 	//Entrada Personalizada
 	var IDmodelo *string = &win.ModelID
@@ -221,95 +193,23 @@ func forWindows() {
 	var modeloAtivo *string = &win.SnipeitModel12
 
 	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Teclado/Desktop/MacBook/Leito_de_Cartão_Mesa): ")
+	fmt.Println("Digite o Tipo de Ativo (Exemplo:Desktop/Notebook): ")
 	fmt.Scanf("%v", IDmodelo)
 
 	//identificando o Modelo
 	switch *IDmodelo {
-	case "Leitor_de_Cartão_Mesa":
-		*IDmodelo = "1"
-	case "Leitor_de_Cartão_Porta":
-		*IDmodelo = "2"
-	case "Mouse_Sem_Fio":
-		*IDmodelo = "3"
-	case "Roteador":
-		*IDmodelo = "4"
-	case "Roteador_Wireless":
-		*IDmodelo = "5"
 	case "Notebook":
 		*IDmodelo = "6"
-	case "Celular_Samsumg":
-		*IDmodelo = "7"
+		*modeloAtivo = "DNZ-Notebook"
 	case "Desktop":
 		*IDmodelo = "8"
-	case "Vostro":
-		*IDmodelo = "9"
-	case "Bravia":
-		*IDmodelo = "10"
-	case "Default":
-		*IDmodelo = "11"
-	case "DP720":
-		*IDmodelo = "12"
-	case "Telefone_Grandstream":
-		*IDmodelo = "13"
-	case "NP350":
-		*IDmodelo = "14"
-	case "Samsung_Default":
-		*IDmodelo = "15"
-	case "NP530":
-		*IDmodelo = "16"
-	case "NP370":
-		*IDmodelo = "17"
-	case "Ideapad":
-		*IDmodelo = "18"
-	case "P 250":
-		*IDmodelo = "19"
-	case "Inspirion":
-		*IDmodelo = "20"
-	case "Asus_X":
-		*IDmodelo = "21"
-	case "MacBook":
-		*IDmodelo = "22"
-	case "SMS":
-		*IDmodelo = "23"
-	case "OfficeJet":
-		*IDmodelo = "24"
-	case "LaserJet":
-		*IDmodelo = "25"
-	case "Asus":
-		*IDmodelo = "26"
-	case "D11":
-		*IDmodelo = "27"
-	case "XPS":
-		*IDmodelo = "28"
-	case "C3":
-		*IDmodelo = "29"
-	case "Multilaser_Desk":
-		*IDmodelo = "30"
-	case "Zelman_Desk":
-		*IDmodelo = "31"
-	case "TV_LG":
-		*IDmodelo = "32"
-	case "Braviaa":
-		*IDmodelo = "33"
-	case "AOC":
-		*IDmodelo = "34"
-	case "Dell":
-		*IDmodelo = "35"
-	case "Flantron":
-		*IDmodelo = "36"
-	case "Samsung":
-		*IDmodelo = "37"
+		*modeloAtivo = "DNZ-Desktop"
 	default:
 		*IDmodelo = "11"
 	}
 
 	//Status ID
 	*IDstatus = "5"
-
-	//Inputs Manuais: Asset Tag, Name, Modelo do Ativo
-	fmt.Println("Digite o Modelo do Ativo (Exemplo: Air): ")
-	fmt.Scanf("%v", modeloAtivo)
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
 	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", win.Name)
@@ -324,47 +224,66 @@ func forWindows() {
 	fmt.Printf("MEMORIA RAM: %v\n", win.SnipeitMema3Ria7)
 	fmt.Printf("DISCO: %v\n\n", win.SnipeitHd9)
 
-	fmt.Println("Você deseja enviar essas informações para o inventário Snipeit? (sim/nao)")
-	var answer string
-	fmt.Scanf("%v", &answer)
+	//Verificando a existência de um ativo semelhante no inventário Snipe it
+	if snipe.Verifybytag(win.AssetTag, IP) {
+		log.Println("Os dados do Ativo Criado não constam no sistema.")
+		fmt.Println("Enviando Ativo para o Snipeit ")
 
-	switch answer {
-	case "sim", "s":
-		MacOS.Snipesending(win)
-	case "nao", "n":
-		fmt.Println("Você deseja apagar os arquivos criados? (sim/nao)")
-		var anotherAnswer string
-		fmt.Scanf("%v", &anotherAnswer)
+		snipe.PostSnipe(win, IP)
+		log.Printf("NOVO ATIVO: %v", Windows.Infos)
+		log.Println("Ativo Criado enviado para o sistema.")
 
-		switch anotherAnswer {
-		case "sim", "s":
-			wg := &sync.WaitGroup{}
-			wg.Add(1)
-			go MacOS.Clear(wg)
-			wg.Wait()
-		case "nao", "n":
-			fmt.Println("Certo. Fique à Vontade!")
+	} else {
+		log.Println("Um Ativo semelhante foi encontrado no sistema.")
+		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
+		for i := 0; i < 4; i++ {
+			time.Sleep(time.Second * 1)
+			fmt.Print(".")
 		}
+		patch, boolean := snipe.Getbytag(IP, win.AssetTag, win)
+		if boolean {
+			fmt.Println("\nPATCH necessário.")
+			fmt.Println("\nExecutando PATCH RESQUEST.")
+			time.Sleep(time.Second * 3)
+			id := snipe.Getidbytag(win.AssetTag, IP)
+			snipe.Patchbyid(id, IP, patch)
 
+		} else {
+			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
+			fmt.Println("\nSem alterações")
+		}
 	}
 
 }
 
+//Função de execução do programa em Linux
 func forLinux() {
 
+	//programa principal para a coleta de informações em Linux
 	Linux.MainProgram()
 
-	//This variable receive a type MacOSt even being Windows. This is because this type is universal, but was named in the MacOS Program.
-	var lin MacOS.MacOSt = MacOS.MacOSt{}
+	//Essa variavel recebe um Tipo MacOSt, pois é o contrato padrão para a execução do programa
+	var lin snipe.CollectionT = snipe.CollectionT{}
 
 	//Populando Struct MacOSt
 	lin.SnipeitCPU11 = Linux.Infos[0]
-	lin.SnipeitMema3Ria7 = Linux.Infos[1]
 	lin.SnipeitSo8 = Linux.Infos[2]
 	lin.SnipeitHostname10 = Linux.Infos[3]
-	lin.SnipeitHd9 = Linux.Infos[4]
-	lin.AssetTag = Linux.Infos[3]
+
 	lin.Name = Linux.Infos[3]
+	interHD := functions.RegexThis(`(^\d{3}[,.]\d?)`, Linux.Infos[4])
+	indexHD := strings.Split(interHD, ",")
+	lin.SnipeitHd9 = strings.Join(indexHD, ".") + "GB"
+
+	intermem := functions.RegexThis(`\d`, Linux.Infos[1])
+	lin.SnipeitMema3Ria7 = intermem + "GB"
+
+	lin.AssetTag = functions.RegexThis(`\d`, Linux.Infos[3])
+	if lin.AssetTag == "" {
+		lin.AssetTag = "No Asset Tag"
+		log.Printf("Nenhum Asset Tag foi colocado, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", Linux.Infos[0])
+
+	}
 
 	//Entrada Personalizada
 	var IDmodelo *string = &lin.ModelID
@@ -372,95 +291,23 @@ func forLinux() {
 	var modeloAtivo *string = &lin.SnipeitModel12
 
 	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Teclado/Desktop/MacBook/Leito_de_Cartão_Mesa): ")
+	fmt.Println("Digite o Tipo de Ativo (Exemplo:Desktop/Notebook): ")
 	fmt.Scanf("%v", IDmodelo)
 
 	//identificando o Modelo
 	switch *IDmodelo {
-	case "Leitor_de_Cartão_Mesa":
-		*IDmodelo = "1"
-	case "Leitor_de_Cartão_Porta":
-		*IDmodelo = "2"
-	case "Mouse_Sem_Fio":
-		*IDmodelo = "3"
-	case "Roteador":
-		*IDmodelo = "4"
-	case "Roteador_Wireless":
-		*IDmodelo = "5"
 	case "Notebook":
 		*IDmodelo = "6"
-	case "Celular_Samsumg":
-		*IDmodelo = "7"
+		*modeloAtivo = "DNZ-Notebook"
 	case "Desktop":
 		*IDmodelo = "8"
-	case "Vostro":
-		*IDmodelo = "9"
-	case "Bravia":
-		*IDmodelo = "10"
-	case "Default":
-		*IDmodelo = "11"
-	case "DP720":
-		*IDmodelo = "12"
-	case "Telefone_Grandstream":
-		*IDmodelo = "13"
-	case "NP350":
-		*IDmodelo = "14"
-	case "Samsung_Default":
-		*IDmodelo = "15"
-	case "NP530":
-		*IDmodelo = "16"
-	case "NP370":
-		*IDmodelo = "17"
-	case "Ideapad":
-		*IDmodelo = "18"
-	case "P 250":
-		*IDmodelo = "19"
-	case "Inspirion":
-		*IDmodelo = "20"
-	case "Asus_X":
-		*IDmodelo = "21"
-	case "MacBook":
-		*IDmodelo = "22"
-	case "SMS":
-		*IDmodelo = "23"
-	case "OfficeJet":
-		*IDmodelo = "24"
-	case "LaserJet":
-		*IDmodelo = "25"
-	case "Asus":
-		*IDmodelo = "26"
-	case "D11":
-		*IDmodelo = "27"
-	case "XPS":
-		*IDmodelo = "28"
-	case "C3":
-		*IDmodelo = "29"
-	case "Multilaser_Desk":
-		*IDmodelo = "30"
-	case "Zelman_Desk":
-		*IDmodelo = "31"
-	case "TV_LG":
-		*IDmodelo = "32"
-	case "Braviaa":
-		*IDmodelo = "33"
-	case "AOC":
-		*IDmodelo = "34"
-	case "Dell":
-		*IDmodelo = "35"
-	case "Flantron":
-		*IDmodelo = "36"
-	case "Samsung":
-		*IDmodelo = "37"
+		*modeloAtivo = "DNZ-Desktop"
 	default:
 		*IDmodelo = "11"
 	}
 
 	//Status ID
 	*IDstatus = "5"
-
-	//Inputs Manuais: Asset Tag, Name, Modelo do Ativo
-	fmt.Println("Digite o Modelo do Ativo (Exemplo: Air): ")
-	fmt.Scanf("%v", modeloAtivo)
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
 	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", lin.Name)
@@ -475,45 +322,78 @@ func forLinux() {
 	fmt.Printf("MEMORIA RAM: %v\n", lin.SnipeitMema3Ria7)
 	fmt.Printf("DISCO: %v\n\n", lin.SnipeitHd9)
 
-	fmt.Println("Você deseja enviar essas informações para o inventário Snipeit? (sim/nao)")
-	var answer string
-	fmt.Scanf("%v", &answer)
+	//Verificando a existência de um ativo semelhante no inventário Snipe it
+	if snipe.Verifybytag(lin.AssetTag, IP) {
+		log.Println("Os dados do Ativo Criado não constam no sistema.")
+		fmt.Println("Enviando Ativo para o Snipeit ")
 
-	switch answer {
-	case "sim", "s":
-		MacOS.Snipesending(lin)
-	case "nao", "n":
-		fmt.Println("Você deseja apagar os arquivos criados? (sim/nao)")
-		var anotherAnswer string
-		fmt.Scanf("%v", &anotherAnswer)
+		snipe.PostSnipe(lin, IP)
+		log.Printf("NOVO ATIVO: %v", Linux.Infos)
+		log.Println("Ativo Criado enviado para o sistema.")
 
-		switch anotherAnswer {
-		case "sim", "s":
-			wg := &sync.WaitGroup{}
-			wg.Add(1)
-			go MacOS.Clear(wg)
-			wg.Wait()
-		case "nao", "n":
-			fmt.Println("Certo. Fique à Vontade!")
+	} else {
+		log.Println("Um Ativo semelhante foi encontrado no sistema.")
+		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
+		for i := 0; i < 4; i++ {
+			time.Sleep(time.Second * 1)
+			fmt.Print(".")
 		}
+		patch, boolean := snipe.Getbytag(IP, lin.AssetTag, lin)
+		if boolean {
+			fmt.Println("\nPATCH necessário.")
+			fmt.Println("\nExecutando PATCH RESQUEST.")
+			time.Sleep(time.Second * 3)
+			id := snipe.Getidbytag(lin.AssetTag, IP)
+			snipe.Patchbyid(id, IP, patch)
 
+		} else {
+			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
+			fmt.Println("\nSem alterações")
+		}
 	}
 
 }
 
+//função principal
 func main() {
+	logname := "logs" + functions.Today() + ".txt"
+	file, err := os.OpenFile(logname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.SetOutput(file)
 
-	fmt.Println("Qual o seus sistema operacional? (MacOS/Linux/Windows)")
-	var resposta string
-	fmt.Scanf("%v\n", &resposta)
+	//mensagem de abertura
+	fmt.Print("Dectecting your Operating System")
+	for i := 0; i < 4; i++ {
+		time.Sleep(time.Second * 1)
+		fmt.Print(".")
+	}
 
-	switch resposta {
-	case "MacOS", "Macos", "MacOs", "macOS", "macos", "MACOS":
+	log.Printf("\nInicio de execução.\n")
+
+	//Identificando sistema operacional
+	switch runtime.GOOS {
+	case "darwin":
 		forMacOs()
-	case "Linux", "linux", "LINUX":
+	case "linux":
 		forLinux()
 
-	case "Windows", "WINDOWS", "windows":
+	case "windows":
 		forWindows()
+	default:
+		fmt.Println("ERROR! Could not found the Operating System!")
+		time.Sleep(time.Second * 1)
+		fmt.Println("Aborting")
+		for i := 0; i < 4; i++ {
+			time.Sleep(time.Second * 1)
+			fmt.Print(".")
+		}
+		time.Sleep(time.Second * 3)
+		log.Fatal()
 	}
+
+	//mensagem de encerramento
+	fmt.Println("\n\nObrigado pela paciência! (FIM)")
+	log.Printf("\nFim de execução.\n")
 }

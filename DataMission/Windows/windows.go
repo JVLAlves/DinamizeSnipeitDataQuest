@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+//Modelo para execução Powershell
 type PowerShell struct {
 	powerShell string
 }
@@ -88,7 +89,6 @@ func MainProgram() {
 
 	}
 	// adicionando informação encontrada no arquivo teste a variável
-	//fmt.Println(Linhas)
 	Infos = append(Infos, Linhas[3])
 
 	//Tratando o ocasoional erro da leitura do arquivo
@@ -144,14 +144,13 @@ func MainProgram() {
 
 	//Lendo linha a linha
 	for fileScanner.Scan() {
-		//fmt.Println(fileScanner.Text())
 		Linhas = append(Linhas, fileScanner.Text())
-		//fmt.Println("Print lendo logfiles linha a linha\n\n\n", Linhas)
 
 	}
 	Infos = append(Infos, Linhas[2])
 	Infos = append(Infos, Linhas[3])
 	Infos = append(Infos, Linhas[4])
+
 	//Tratando o ocasoional erro da leitura do arquivo
 	if err := fileScanner.Err(); err != nil {
 		log.Fatalf("Error while reading file: %s", err)
@@ -161,7 +160,6 @@ func MainProgram() {
 	file.Close()
 
 	re := regexp.MustCompile(`[ ]{2}[[:alnum:]]+[.\-|[:alnum:])]+[[:print:]]+`)
-	//fmt.Println("\n\n\n", Infos)
 
 	Infos = []string{}
 	for i := 0; i < len(Linhas); i++ {
@@ -172,14 +170,11 @@ func MainProgram() {
 			Infos = append(Infos, justString)
 		}
 		justString = ""
-		//fmt.Println("Print linha a linha da variável linha \n", Linhas[i])
 	}
+
 	Infos = append(Infos, Linhas[7])
 
 	Infos = append(Infos, Linhas[8])
-
-	fmt.Println("print inteiro da Infos\n\n\n", Infos)
-	//fmt.Println("print inteiro da Infos\n\n\n", len(Infos))
 
 	_, _, _ = posh.Execute("Remove-Item -path $env:userprofile\\logfileees\\logfileees.txt")
 	_, _, _ = posh.Execute("Remove-Item -path $env:userprofile\\logfileees\\disk.txt")
