@@ -351,32 +351,42 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 
 		for i := 0; i < len(AnalyserIndex); i++ {
 			if AnalyserIndex[i] != AtivoIndex[i] {
-				fmt.Printf("\nDisparidade encontrada no Index[%v].\n", i)
-				log.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
-				fmt.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
+				var Fieldname string
 				switch i {
 				case 0:
 					Patchresquest += ",\"name\":\"" + AtivoIndex[i] + "\""
+					Fieldname = "NAME"
 				case 1:
 					Patchresquest += ",\"asset_tag\":\"" + AtivoIndex[i] + "\""
+					Fieldname = "ASSET TAG"
 				case 2:
 					Patchresquest += ",\"model_id\":\"" + AtivoIndex[i] + "\""
+					Fieldname = "MODEL ID"
 				case 3:
 					Patchresquest += ",\"status_id\":\"" + AtivoIndex[i] + "\""
+					Fieldname = "STATUS ID"
 				case 4:
 					Patchresquest += ",\"_snipeit_mema3ria_7\":\"" + AtivoIndex[i] + "\""
+					Fieldname = "MEMÓRIA"
 				case 5:
 					Patchresquest += ",\"_snipeit_so_8\":\"" + AtivoIndex[i] + "\""
+					Fieldname = "SISTEMA OPERACIONAL"
 				case 6:
 					Patchresquest += ",\"_snipeit_hd_9\":\"" + AtivoIndex[i] + "\""
+					Fieldname = "HD"
 				case 7:
 					Patchresquest += ",\"_snipeit_hostname_10\":\"" + AtivoIndex[i] + "\""
+					Fieldname = "HOSTNAME"
 				case 8:
 					Patchresquest += ",\"_snipeit_cpu_11\":\"" + AtivoIndex[i] + "\""
+					Fieldname = "CPU"
 				case 9:
 					Patchresquest += ",\"_snipeit_modelo_12\":\"" + AtivoIndex[i] + "\""
-
+					Fieldname = "MODEL"
 				}
+				fmt.Printf("\nDisparidade encontrada no Index[%v]: %v\n", i, Fieldname)
+				log.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
+				fmt.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
 				Pending = append(Pending, AtivoIndex[i])
 				time.Sleep(time.Second * 3)
 			} else {

@@ -9,8 +9,6 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
-
-	functions "github.com/JVLAlves/DinamizeSnipeitDataQuest/Utilities/Functions"
 )
 
 //Modelo para execução Powershell
@@ -52,24 +50,14 @@ func MainProgram() {
 	posh := New()
 
 	//Aplicanddo os comandos literais que serão executados no powershell
-	stdout, _, _ := posh.Execute("Get-Location")
-	caminho := functions.RegexThis(`[(C:\\Users\)].+[[:alnum:]]?[^(\r\n)]`, stdout)
-	fmt.Printf("%#v", caminho)
-	log.Fatal()
-	caminho = caminho[:len(caminho)-1]
-	//caminho = ("\"" + caminho + "\"")
-	fmt.Printf("%#v", caminho)
-	log.Fatal()
-	_, _, _ = posh.Execute("New-Item -path" + "\"" + caminho + "\"" + "-Name \"logfileees\" -ItemType \"directory\"")
+	_, _, err := posh.Execute("New-Item -path\"$env:userprofile\"-Name \"logfileees\" -ItemType \"directory\"")
 	_, _, _ = posh.Execute("New-Item -path \"logfileees\" -Name \"logfileees.txt\" -ItemType \"file\"")
-	_, _, _ = posh.Execute("Systeminfo > " + "\"" + caminho + "\\logfileees\\Informacoes_Do_Sistema.txt\"")
-	_, _, _ = posh.Execute("Get-WmiObject -Class Win32_Processor -ComputerName . | Select-Object -Property \"name\" > " + "\"" + caminho + "\\logfileees\\cpu.txt\"")
-	_, _, _ = posh.Execute("get-WMIobject Win32_LogicalDisk -Filter \"DeviceID = 'C:'\" | Select-Object -Property \"Size\" > " + "\"" + caminho + "\\logfileees\\disk.txt\"")
-	_, _, _ = posh.Execute("(Get-Content -path " + "\"" + caminho + "\\logfileees\\cpu.txt\" -TotalCount 6)[3] | Add-Content -path " + "\"" + caminho + "\\logfileees\\logfileees.txt\"")
-	_, _, _ = posh.Execute("(Get-Content -path " + "\"" + caminho + "\\logfileees\\disk.txt\" -TotalCount 6)[3] | Add-Content -path " + "\"" + caminho + "\\logfileees\\logfileees.txt\"")
-	_, stderr, err := posh.Execute("Add-Content -Path " + "\"" + caminho + "\\logfileees\\logfileees.txt\" -value (Select-String -Path " + "\"" + caminho + "\\logfileees\\Informacoes_Do_Sistema.txt\" -Pattern \"Nome do host:\",\"Nome do sistema operacional:\",\"Memória física total:\")")
-	fmt.Println(stdout)
-	fmt.Println(stderr)
+	_, _, _ = posh.Execute("Systeminfo > \"$env:userprofile\\logfileees\\Informacoes_Do_Sistema.txt\"")
+	_, _, _ = posh.Execute("Get-WmiObject -Class Win32_Processor -ComputerName . | Select-Object -Property \"name\" > \"$env:userprofile\\logfileees\\cpu.txt\"")
+	_, _, _ = posh.Execute("get-WMIobject Win32_LogicalDisk -Filter \"DeviceID = 'C:'\" | Select-Object -Property \"Size\" > \"$env:userprofile\\logfileees\\disk.txt\"")
+	_, _, _ = posh.Execute("(Get-Content -path \"$env:userprofile\\logfileees\\cpu.txt\" -TotalCount 6)[3] | Add-Content -path \"$env:userprofile\\logfileees\\logfileees.txt\"")
+	_, _, _ = posh.Execute("(Get-Content -path \"$env:userprofile\\logfileees\\disk.txt\" -TotalCount 6)[3] | Add-Content -path \"$env:userprofile\\logfileees\\logfileees.txt\"")
+	_, _, _ = posh.Execute("Add-Content -Path \"$env:userprofile\\logfileees\\logfileees.txt\" -value (Select-String -Path \"$env:userprofile\\logfileees\\Informacoes_Do_Sistema.txt\" -Pattern \"Nome do host:\",\"Nome do sistema operacional:\",\"Memória física total:\")")
 
 	if err != nil {
 		fmt.Println(err)

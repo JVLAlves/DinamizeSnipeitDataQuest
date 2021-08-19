@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"runtime"
 	"strconv"
@@ -43,12 +44,20 @@ func forMacOs() {
 
 	//Populando Struct MacOSt
 	mac.SnipeitCPU11 = MacOS.Infos[1]
-	mac.SnipeitMema3Ria7 = MacOS.Infos[2]
+	//mac.SnipeitMema3Ria7 = MacOS.Infos[2]
 	mac.SnipeitHostname10 = MacOS.Infos[0]
-	mac.SnipeitHd9 = MacOS.Infos[3]
+	//mac.SnipeitHd9 = MacOS.Infos[3]
 	mac.Name = MacOS.Infos[0]
 
-	mac.SnipeitMema3Ria7 = functions.RegexThis(`(^\d{1,3})`, MacOS.Infos[2]) + "GB"
+	Memrexed := functions.RegexThis(`(^ ?\d{1,3}[,.]?\d*)`, MacOS.Infos[2])
+	Memnum, _ := strconv.ParseFloat(Memrexed, 64)
+	Memround := math.Round(Memnum)
+	mac.SnipeitMema3Ria7 = strconv.Itoa(int(Memround)) + "GB"
+
+	HDrexed := functions.RegexThis(`(^ ?\d{1,3}[,.]?\d*)`, MacOS.Infos[3])
+	HDnum, _ := strconv.ParseFloat(HDrexed, 64)
+	HDround := math.Round(HDnum)
+	mac.SnipeitHd9 = strconv.Itoa(int(HDround)) + "GB"
 
 	mac.AssetTag = functions.RegexThis(`\d`, MacOS.Infos[0])
 	if mac.AssetTag == "" {
@@ -117,7 +126,7 @@ func forMacOs() {
 	}
 
 	//Status ID
-	*IDstatus = "5"
+	*IDstatus = "7"
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
 	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", mac.Name)
@@ -138,7 +147,18 @@ func forMacOs() {
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
 		snipe.PostSnipe(mac, IP)
-		log.Printf("NOVO ATIVO: %v", MacOS.Infos)
+		log.Printf("NOVO ATIVO:\n")
+		log.Printf("\nNOME DO DISPOSITIVO: %v\n", mac.Name)
+		log.Printf("ASSET TAG: %v\n", mac.AssetTag)
+		log.Printf("TIPO DE ATIVO: %v\n", mac.ModelID)
+		log.Printf("MODELO DO ATIVO: %v\n", mac.SnipeitModel12)
+		log.Printf("STATUS: %v\n\n", mac.StatusID)
+		log.Printf("DESCRIÇÃO DO ATIVO\n")
+		log.Printf("HOSTNAME: %v\n", mac.SnipeitHostname10)
+		log.Printf("S.O.: %v\n", mac.SnipeitSo8)
+		log.Printf("CPU: %v\n", mac.SnipeitCPU11)
+		log.Printf("MEMORIA RAM: %v\n", mac.SnipeitMema3Ria7)
+		log.Printf("DISCO: %v\n\n", mac.SnipeitHd9)
 		log.Println("Ativo Criado enviado para o sistema.")
 
 	} else {
@@ -178,14 +198,22 @@ func forWindows() {
 	win.SnipeitHostname10 = Windows.Infos[0]
 	win.Name = Windows.Infos[0]
 
+	Memrexed := functions.RegexThis(`(^ ?\d{1,3}[,.]?\d*)`, Windows.Infos[2])
+	Memnum, _ := strconv.ParseFloat(Memrexed, 64)
+	Memround := math.Round(Memnum)
+	win.SnipeitMema3Ria7 = strconv.Itoa(int(Memround)) + "GB"
+
+	HDrexed := functions.RegexThis(`(^ ?\d{1,3}[,.]?\d*)`, Windows.Infos[4])
+	HDnum, _ := strconv.ParseFloat(HDrexed, 64)
+	HDround := math.Round(HDnum)
+	win.SnipeitHd9 = strconv.Itoa(int(HDround)) + "GB"
+
 	win.AssetTag = functions.RegexThis(`\d`, Windows.Infos[0])
 	if win.AssetTag == "" {
 		win.AssetTag = "No Asset Tag"
 		log.Printf("Nenhum Asset Tag foi colocado, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", Windows.Infos[0])
 
 	}
-
-	win.SnipeitHd9 = functions.RegexThis(`(^\d{3})`, Windows.Infos[4]) + "GB"
 
 	//Entrada Personalizada
 	var IDmodelo *string = &win.ModelID
@@ -209,7 +237,7 @@ func forWindows() {
 	}
 
 	//Status ID
-	*IDstatus = "5"
+	*IDstatus = "7"
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
 	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", win.Name)
@@ -230,7 +258,19 @@ func forWindows() {
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
 		snipe.PostSnipe(win, IP)
-		log.Printf("NOVO ATIVO: %v", Windows.Infos)
+		log.Printf("NOVO ATIVO:\n")
+		log.Printf("\nNOME DO DISPOSITIVO: %v\n", win.Name)
+		log.Printf("ASSET TAG: %v\n", win.AssetTag)
+		log.Printf("TIPO DE ATIVO: %v\n", win.ModelID)
+		log.Printf("MODELO DO ATIVO: %v\n", win.SnipeitModel12)
+		log.Printf("STATUS: %v\n\n", win.StatusID)
+		log.Printf("DESCRIÇÃO DO ATIVO\n")
+		log.Printf("HOSTNAME: %v\n", win.SnipeitHostname10)
+		log.Printf("S.O.: %v\n", win.SnipeitSo8)
+		log.Printf("CPU: %v\n", win.SnipeitCPU11)
+		log.Printf("MEMORIA RAM: %v\n", win.SnipeitMema3Ria7)
+		log.Printf("DISCO: %v\n\n", win.SnipeitHd9)
+
 		log.Println("Ativo Criado enviado para o sistema.")
 
 	} else {
@@ -271,12 +311,17 @@ func forLinux() {
 	lin.SnipeitHostname10 = Linux.Infos[3]
 
 	lin.Name = Linux.Infos[3]
-	interHD := functions.RegexThis(`(^\d{3}[,.]\d?)`, Linux.Infos[4])
+	interHD := functions.RegexThis(`(^ ?\d{1,3}[,.]?\d*)`, Linux.Infos[4])
 	indexHD := strings.Split(interHD, ",")
-	lin.SnipeitHd9 = strings.Join(indexHD, ".") + "GB"
+	interHD = strings.Join(indexHD, ".")
+	HDnum, _ := strconv.ParseFloat(interHD, 64)
+	HDround := math.Round(HDnum)
+	lin.SnipeitHd9 = strconv.Itoa(int(HDround)) + "GB"
 
-	intermem := functions.RegexThis(`\d`, Linux.Infos[1])
-	lin.SnipeitMema3Ria7 = intermem + "GB"
+	intermem := functions.RegexThis(`(^ ?\d{1,3}[,.]?\d*)`, Linux.Infos[1])
+	Memnum, _ := strconv.ParseFloat(intermem, 64)
+	Memround := math.Round(Memnum)
+	lin.SnipeitMema3Ria7 = strconv.Itoa(int(Memround)) + "GB"
 
 	lin.AssetTag = functions.RegexThis(`\d`, Linux.Infos[3])
 	if lin.AssetTag == "" {
@@ -307,7 +352,7 @@ func forLinux() {
 	}
 
 	//Status ID
-	*IDstatus = "5"
+	*IDstatus = "7"
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
 	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", lin.Name)
@@ -328,7 +373,18 @@ func forLinux() {
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
 		snipe.PostSnipe(lin, IP)
-		log.Printf("NOVO ATIVO: %v", Linux.Infos)
+		log.Printf("NOVO ATIVO:\n")
+		log.Printf("\nNOME DO DISPOSITIVO: %v\n", lin.Name)
+		log.Printf("ASSET TAG: %v\n", lin.AssetTag)
+		log.Printf("TIPO DE ATIVO: %v\n", lin.ModelID)
+		log.Printf("MODELO DO ATIVO: %v\n", lin.SnipeitModel12)
+		log.Printf("STATUS: %v\n\n", lin.StatusID)
+		log.Printf("DESCRIÇÃO DO ATIVO\n")
+		log.Printf("HOSTNAME: %v\n", lin.SnipeitHostname10)
+		log.Printf("S.O.: %v\n", lin.SnipeitSo8)
+		log.Printf("CPU: %v\n", lin.SnipeitCPU11)
+		log.Printf("MEMORIA RAM: %v\n", lin.SnipeitMema3Ria7)
+		log.Printf("DISCO: %v\n\n", lin.SnipeitHd9)
 		log.Println("Ativo Criado enviado para o sistema.")
 
 	} else {
