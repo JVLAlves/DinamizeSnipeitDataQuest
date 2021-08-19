@@ -1,4 +1,4 @@
-package main
+package Windows
 
 import (
 	"bufio"
@@ -48,7 +48,7 @@ func (p *PowerShell) Execute(args ...string) (stdOut string, stdErr string, err 
 	return
 }
 
-func main() {
+func MainProgram() {
 	posh := New()
 
 	//Aplicanddo os comandos literais que serão executados no powershell
