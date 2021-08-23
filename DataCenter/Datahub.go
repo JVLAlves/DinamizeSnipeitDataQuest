@@ -129,7 +129,7 @@ func forMacOs() {
 	*IDstatus = "7"
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
-	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", mac.Name)
+	fmt.Printf("NOME DO DISPOSITIVO: %v\n", mac.Name)
 	fmt.Printf("ASSET TAG: %v\n", mac.AssetTag)
 	fmt.Printf("TIPO DE ATIVO: %v\n", mac.ModelID)
 	fmt.Printf("MODELO DO ATIVO: %v\n", mac.SnipeitModel12)
@@ -148,7 +148,7 @@ func forMacOs() {
 
 		snipe.PostSnipe(mac, IP)
 		log.Printf("NOVO ATIVO:\n")
-		log.Printf("\nNOME DO DISPOSITIVO: %v\n", mac.Name)
+		log.Printf("NOME DO DISPOSITIVO: %v\n", mac.Name)
 		log.Printf("ASSET TAG: %v\n", mac.AssetTag)
 		log.Printf("TIPO DE ATIVO: %v\n", mac.ModelID)
 		log.Printf("MODELO DO ATIVO: %v\n", mac.SnipeitModel12)
@@ -240,7 +240,7 @@ func forWindows() {
 	*IDstatus = "7"
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
-	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", win.Name)
+	fmt.Printf("NOME DO DISPOSITIVO: %v\n", win.Name)
 	fmt.Printf("ASSET TAG: %v\n", win.AssetTag)
 	fmt.Printf("TIPO DE ATIVO: %v\n", win.ModelID)
 	fmt.Printf("MODELO DO ATIVO: %v\n", win.SnipeitModel12)
@@ -259,7 +259,7 @@ func forWindows() {
 
 		snipe.PostSnipe(win, IP)
 		log.Printf("NOVO ATIVO:\n")
-		log.Printf("\nNOME DO DISPOSITIVO: %v\n", win.Name)
+		log.Printf("NOME DO DISPOSITIVO: %v\n", win.Name)
 		log.Printf("ASSET TAG: %v\n", win.AssetTag)
 		log.Printf("TIPO DE ATIVO: %v\n", win.ModelID)
 		log.Printf("MODELO DO ATIVO: %v\n", win.SnipeitModel12)
@@ -355,7 +355,7 @@ func forLinux() {
 	*IDstatus = "7"
 
 	//Somente alguns prints para sinalização; Sem utilidade pratica para o código.
-	fmt.Printf("\nNOME DO DISPOSITIVO: %v\n", lin.Name)
+	fmt.Printf("NOME DO DISPOSITIVO: %v\n", lin.Name)
 	fmt.Printf("ASSET TAG: %v\n", lin.AssetTag)
 	fmt.Printf("TIPO DE ATIVO: %v\n", lin.ModelID)
 	fmt.Printf("MODELO DO ATIVO: %v\n", lin.SnipeitModel12)
@@ -374,7 +374,7 @@ func forLinux() {
 
 		snipe.PostSnipe(lin, IP)
 		log.Printf("NOVO ATIVO:\n")
-		log.Printf("\nNOME DO DISPOSITIVO: %v\n", lin.Name)
+		log.Printf("NOME DO DISPOSITIVO: %v\n", lin.Name)
 		log.Printf("ASSET TAG: %v\n", lin.AssetTag)
 		log.Printf("TIPO DE ATIVO: %v\n", lin.ModelID)
 		log.Printf("MODELO DO ATIVO: %v\n", lin.SnipeitModel12)
