@@ -66,9 +66,9 @@ func MainProgram() {
 
 	}
 	var (
-		caminhocpu  = "%" + "USEPRPROFILE%\\logfileees\\cpu.txt"
-		caminhodisk = "%" + "USEPRPROFILE%\\logfileees\\cpu.txt"
-		caminholog  = "%" + "USEPRPROFILE%\\logfileees\\logfileees.txt"
+		caminhocpu  = "%" + "USERPROFILE%\\logfileees\\cpu.txt"
+		caminhodisk = "%" + "USERPROFILE%\\logfileees\\cpu.txt"
+		caminholog  = "%" + "USERPROFILE%\\logfileees\\logfileees.txt"
 	)
 
 	////////////////////////////////////////////ABRINDO ARQUIVO PARA LER A INFORMAÇÃO DE CPU//////////////////////////////////////////////////////////////////////////////////
