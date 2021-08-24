@@ -50,6 +50,9 @@ func MainProgram() {
 	posh := New()
 
 	//Aplicanddo os comandos literais que serão executados no powershell
+	stdout, _, _ := posh.Execute("$env:userprofile")
+	home := stdout
+	home = home[:len(home)-2]
 	_, _, _ = posh.Execute("New-Item -path \"$env:userprofile\" -Name \"logfileees\" -ItemType \"directory\"")
 	_, _, _ = posh.Execute("New-Item -path \"logfileees\" -Name \"logfileees.txt\" -ItemType \"file\"")
 	_, _, _ = posh.Execute("Systeminfo > \"$env:userprofile\\logfileees\\Informacoes_Do_Sistema.txt\"")
@@ -66,12 +69,14 @@ func MainProgram() {
 
 	}
 	var (
-		caminhocpu  = "c:\\Users\\sonic\\logfileees\\cpu.txt"
-		caminhodisk = "c:\\Users\\sonic\\logfileees\\cpu.txt"
-		caminholog  = "c:\\Users\\sonic\\logfileees\\logfileees.txt"
+		caminhocpu  = home + "\\logfileees\\cpu.txt"
+		caminhodisk = home + "\\logfileees\\disk.txt"
+		caminholog  = home + "\\logfileees\\logfileees.txt"
 	)
 
 	////////////////////////////////////////////ABRINDO ARQUIVO PARA LER A INFORMAÇÃO DE CPU//////////////////////////////////////////////////////////////////////////////////
+
+	fmt.Printf("Print da home %v", home)
 	file, err := os.Open(caminhocpu)
 	if err != nil {
 		log.Fatalf("Error when opening file cpu: %s", err)
