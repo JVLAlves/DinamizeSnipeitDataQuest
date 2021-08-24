@@ -50,14 +50,16 @@ func MainProgram() {
 	posh := New()
 
 	//Aplicanddo os comandos literais que serão executados no powershell
-	_, _, err := posh.Execute("New-Item -path\"$env:userprofile\"-Name \"logfileees\" -ItemType \"directory\"")
+	_, _, _ = posh.Execute("New-Item -path \"$env:userprofile\" -Name \"logfileees\" -ItemType \"directory\"")
 	_, _, _ = posh.Execute("New-Item -path \"logfileees\" -Name \"logfileees.txt\" -ItemType \"file\"")
 	_, _, _ = posh.Execute("Systeminfo > \"$env:userprofile\\logfileees\\Informacoes_Do_Sistema.txt\"")
 	_, _, _ = posh.Execute("Get-WmiObject -Class Win32_Processor -ComputerName . | Select-Object -Property \"name\" > \"$env:userprofile\\logfileees\\cpu.txt\"")
 	_, _, _ = posh.Execute("get-WMIobject Win32_LogicalDisk -Filter \"DeviceID = 'C:'\" | Select-Object -Property \"Size\" > \"$env:userprofile\\logfileees\\disk.txt\"")
 	_, _, _ = posh.Execute("(Get-Content -path \"$env:userprofile\\logfileees\\cpu.txt\" -TotalCount 6)[3] | Add-Content -path \"$env:userprofile\\logfileees\\logfileees.txt\"")
 	_, _, _ = posh.Execute("(Get-Content -path \"$env:userprofile\\logfileees\\disk.txt\" -TotalCount 6)[3] | Add-Content -path \"$env:userprofile\\logfileees\\logfileees.txt\"")
-	_, _, _ = posh.Execute("Add-Content -Path \"$env:userprofile\\logfileees\\logfileees.txt\" -value (Select-String -Path \"$env:userprofile\\logfileees\\Informacoes_Do_Sistema.txt\" -Pattern \"Nome do host:\",\"Nome do sistema operacional:\",\"Memória física total:\")")
+	stdout, stderr, err := posh.Execute("Add-Content -Path \"$env:userprofile\\logfileees\\logfileees.txt\" -value (Select-String -Path \"$env:userprofile\\logfileees\\Informacoes_Do_Sistema.txt\" -Pattern \"Nome do host:\",\"Nome do sistema operacional:\",\"Memória física total:\")")
+	fmt.Println(stdout)
+	fmt.Println(stderr)
 
 	if err != nil {
 		fmt.Println(err)
