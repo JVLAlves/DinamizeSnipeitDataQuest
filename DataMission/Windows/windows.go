@@ -66,9 +66,9 @@ func MainProgram() {
 
 	}
 	var (
-		caminhocpu  = "logfileees\\cpu.txt"
-		caminhodisk = "logfileees\\cpu.txt"
-		caminholog  = "logfileees\\logfileees.txt"
+		caminhocpu  = "$env:userprofile\\logfileees\\cpu.txt"
+		caminhodisk = "$env:userprofile\\logfileees\\cpu.txt"
+		caminholog  = "$env:userprofile\\logfileees\\logfileees.txt"
 	)
 
 	////////////////////////////////////////////ABRINDO ARQUIVO PARA LER A INFORMAÇÃO DE CPU//////////////////////////////////////////////////////////////////////////////////
