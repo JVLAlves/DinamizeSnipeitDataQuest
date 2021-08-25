@@ -94,6 +94,7 @@ func WindowsDir(wg *sync.WaitGroup) {
 	os.Setenv("HOME", home[:len(home)-2])
 	username := os.Getenv("USERNAME")
 	_, _, _ = posh.Execute("New-Item -path \"$env:userprofile\" -Name \"" + username + "_logs" + "\" -ItemType \"directory\"")
+	wg.Done()
 }
 
 func LinuxDir(wg *sync.WaitGroup) {
