@@ -38,7 +38,6 @@ func forMacOs() {
 	MacOS.Running()
 
 	//Verificação das informações "Appendadas"
-	fmt.Println(MacOS.Infos)
 
 	var mac snipe.CollectionT = snipe.CollectionT{}
 
@@ -192,7 +191,6 @@ func forWindows() {
 	var win snipe.CollectionT = snipe.CollectionT{}
 
 	//Populando Struct MacOSt
-	fmt.Printf("INFOS: %v", Windows.Infos)
 	win.SnipeitCPU11 = Windows.Infos[3]
 	win.SnipeitMema3Ria7 = Windows.Infos[2]
 	win.SnipeitSo8 = Windows.Infos[1]
@@ -201,19 +199,13 @@ func forWindows() {
 
 	Memrexed := functions.RegexThis(`^[ ]*\d{1,3}`, Windows.Infos[2])
 	Memrexed = functions.RegexThis(`\d`, Memrexed)
-	fmt.Printf("AFTER REGEX: %v\n", Memrexed)
 	Memnum, _ := strconv.ParseFloat(Memrexed, 64)
-	fmt.Printf("NUMBER: %v\n", Memnum)
 	Memround := math.Round(Memnum)
-	fmt.Printf("ROUND:%v\n", Memround)
 	win.SnipeitMema3Ria7 = strconv.Itoa(int(Memround)) + "GB"
 
 	HDrexed := functions.RegexThis(`^[ ]*\d{1,3}`, Windows.Infos[4])
-	fmt.Printf("AFTER REGEX:%v\n", HDrexed)
 	HDnum, _ := strconv.ParseFloat(HDrexed, 64)
-	fmt.Printf("NUMBER: %v\n", HDnum)
 	HDround := math.Round(HDnum)
-	fmt.Printf("ROUND:%v\n", HDround)
 	win.SnipeitHd9 = strconv.Itoa(int(HDround)) + "GB"
 
 	win.AssetTag = functions.RegexThis(`\d`, Windows.Infos[0])

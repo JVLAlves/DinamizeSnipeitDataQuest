@@ -76,7 +76,6 @@ func MainProgram() {
 
 	////////////////////////////////////////////ABRINDO ARQUIVO PARA LER A INFORMAÇÃO DE CPU//////////////////////////////////////////////////////////////////////////////////
 
-	fmt.Printf("Print da home %v", home)
 	file, err := os.Open(caminhocpu)
 	if err != nil {
 		log.Fatalf("Error when opening file cpu: %s", err)
