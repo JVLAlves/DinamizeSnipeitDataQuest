@@ -99,19 +99,17 @@ func WindowsDir(wg *sync.WaitGroup) {
 
 func LinuxDir(wg *sync.WaitGroup) {
 
-	cmd := exec.Command("bash", "-c", "echo"+" "+"$HOME > $HOME/Pathfinder.txt")
+	cmd := exec.Command("bash", "-c", "echo"+" "+"$HOME > ./.Pathfinder.txt")
 	err := cmd.Run()
 	if err != nil {
 		panic(err)
 	}
-
-	file, err := os.Open("$HOME/Pathfinder.txt")
+	file, err := os.Open(".Pathfinder.txt")
 	if err != nil {
 		log.Print(err)
 	}
 	fileScanner := bufio.NewScanner(file)
 	Linhas := []string{}
-
 	for fileScanner.Scan() {
 		Linhas = append(Linhas, fileScanner.Text())
 		if fileScanner.Err() != nil {
@@ -121,7 +119,7 @@ func LinuxDir(wg *sync.WaitGroup) {
 	os.Setenv("HOME", Linhas[0])
 	username := os.Getenv("USERNAME")
 	file.Close()
-	cmd = exec.Command("rm", "Pathfinder.txt")
+	cmd = exec.Command("rm", "./.Pathfinder.txt")
 	_, _ = cmd.Output()
 
 	cmd = exec.Command("bash", "-c", "mkdir"+" "+"$HOME/"+username+"_logs")
