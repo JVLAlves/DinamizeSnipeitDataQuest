@@ -125,7 +125,7 @@ func LinuxDir(wg *sync.WaitGroup) {
 	cmd = exec.Command("bash", "-c", "mkdir"+" "+"$HOME/"+username+"_logs")
 	err = cmd.Run()
 	if err != nil {
-		panic(err)
+		log.Fatalf("PANIC DE CRIAÇÃO DO DIRETORIO DE LOGS: %v", err)
 	}
 	wg.Done()
 }
