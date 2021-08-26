@@ -105,7 +105,7 @@ func LinuxDir(wg *sync.WaitGroup) {
 		panic(err)
 	}
 
-	file, err := os.Open("Pathfinder.txt")
+	file, err := os.Open("$HOME/Pathfinder.txt")
 	if err != nil {
 		log.Print(err)
 	}
