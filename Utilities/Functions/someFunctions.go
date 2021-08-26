@@ -102,7 +102,7 @@ func LinuxDir(wg *sync.WaitGroup) {
 	cmd := exec.Command("bash", "-c", "echo"+" "+"$HOME > ./.Pathfinder.txt")
 	err := cmd.Run()
 	if err != nil {
-		panic(err)
+		log.Fatalf("PANIC DE CRIAÇÃO DO PATHFINDER: %v", err)
 	}
 	file, err := os.Open(".Pathfinder.txt")
 	if err != nil {
