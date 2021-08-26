@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"math"
-	"os"
 	"runtime"
 	"strconv"
 	"strings"
@@ -412,12 +411,7 @@ func forLinux() {
 
 //função principal
 func main() {
-	logname := "logs" + functions.Today() + ".txt"
-	file, err := os.OpenFile(logname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.SetOutput(file)
+	functions.ActiveLogs()
 
 	//mensagem de abertura
 	fmt.Print("Dectecting your Operating System")
