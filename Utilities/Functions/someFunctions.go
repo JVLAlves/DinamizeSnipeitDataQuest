@@ -53,7 +53,7 @@ func ActiveLogs() {
 	if err != nil {
 		errboolean = false
 	}
-	HOME, boolean := os.LookupEnv("HOME")
+	_, boolean := os.LookupEnv("HOME")
 	USERNAME := os.Getenv("USERNAME")
 	if !(boolean && errboolean) {
 		wg := &sync.WaitGroup{}
@@ -61,9 +61,8 @@ func ActiveLogs() {
 		CreateDir(wg)
 		wg.Wait()
 	}
-
+	HOME := os.Getenv("HOME")
 	HOMELOGS := HOME + "/" + USERNAME + "_logs"
-	path := HOMELOGS
 	years, month, day := time.Now().Date()
 
 	Day := strconv.Itoa(day)
@@ -72,7 +71,7 @@ func ActiveLogs() {
 
 	Daytime := "_" + Day + "_" + Month + "_" + Year
 
-	logname := path + "/Logs" + Daytime + ".txt"
+	logname := HOMELOGS + "/Logs" + Daytime + ".txt"
 
 	outFile, err := os.OpenFile(logname, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
 	if err != nil {
