@@ -106,22 +106,9 @@ func forMacOs() {
 	var IDstatus *string = &mac.StatusID
 	var modeloAtivo *string = &mac.SnipeitModel12
 
-	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Desktop/MacBook): ")
-	fmt.Scanf("%v", IDmodelo)
-
 	//identificando o Modelo
-	switch *IDmodelo {
-
-	case "Desktop":
-		*IDmodelo = "8"
-		*modeloAtivo = "DNZ-Desktop"
-	case "MacBook":
-		*IDmodelo = "22"
-		*modeloAtivo = "DNZ-Macbook"
-	default:
-		*IDmodelo = "11"
-	}
+	*IDmodelo = "8"
+	*modeloAtivo = "DNZ-COMPUTER"
 
 	//Status ID
 	*IDstatus = "7"
@@ -219,22 +206,9 @@ func forWindows() {
 	var IDstatus *string = &win.StatusID
 	var modeloAtivo *string = &win.SnipeitModel12
 
-	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Desktop/Notebook): ")
-	fmt.Scanf("%v", IDmodelo)
-
 	//identificando o Modelo
-	switch *IDmodelo {
-	case "Notebook":
-		*IDmodelo = "6"
-		*modeloAtivo = "DNZ-Notebook"
-	case "Desktop":
-		*IDmodelo = "8"
-		*modeloAtivo = "DNZ-Desktop"
-	default:
-		*IDmodelo = "11"
-	}
-
+	*IDmodelo = "8"
+	*modeloAtivo = "DNZ-COMPUTER"
 	//Status ID
 	*IDstatus = "7"
 
@@ -333,23 +307,9 @@ func forLinux() {
 	var IDmodelo *string = &lin.ModelID
 	var IDstatus *string = &lin.StatusID
 	var modeloAtivo *string = &lin.SnipeitModel12
-
-	//Input Manual: Tipo de Ativo
-	fmt.Println("Digite o Tipo de Ativo (Exemplo:Desktop/Notebook): ")
-	fmt.Scanf("%v", IDmodelo)
-
 	//identificando o Modelo
-	switch *IDmodelo {
-	case "Notebook":
-		*IDmodelo = "6"
-		*modeloAtivo = "DNZ-Notebook"
-	case "Desktop":
-		*IDmodelo = "8"
-		*modeloAtivo = "DNZ-Desktop"
-	default:
-		*IDmodelo = "11"
-	}
-
+	*IDmodelo = "8"
+	*modeloAtivo = "DNZ-COMPUTER"
 	//Status ID
 	*IDstatus = "7"
 
