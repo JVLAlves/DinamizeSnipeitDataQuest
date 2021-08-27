@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -30,6 +31,17 @@ func RegexThis(regex string, target string) (result string) {
 	return dojoin
 }
 
+func CreateDir(wg *sync.WaitGroup) {
+	HOME, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatalf("ERROR CAPTING USERHOMEDIR: %v", err)
+	}
+	os.Setenv("HOME", HOME)
+	USERname := os.Getenv("USERNAME")
+	os.Mkdir(HOME+"/"+USERname+"_logs", 0777)
+	wg.Done()
+}
+
 //Cria arquivos com as informações retiradas do computador via Terminal
 func ActiveLogs() {
 
@@ -44,14 +56,10 @@ func ActiveLogs() {
 	HOME, boolean := os.LookupEnv("HOME")
 	USERNAME := os.Getenv("USERNAME")
 	if !(boolean && errboolean) {
-
-		HOME, err := os.UserHomeDir()
-		if err != nil {
-			log.Fatalf("ERROR CAPTING USERHOMEDIR: %v", err)
-		}
-		os.Setenv("HOME", HOME)
-		USERname := os.Getenv("USERNAME")
-		os.Mkdir(HOME+"/"+USERname+"_logs", 0777)
+		wg := &sync.WaitGroup{}
+		wg.Add(1)
+		CreateDir(wg)
+		wg.Wait()
 	}
 
 	HOMELOGS := HOME + "/" + USERNAME + "_logs"
