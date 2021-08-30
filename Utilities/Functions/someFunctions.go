@@ -10,6 +10,9 @@ import (
 	"time"
 )
 
+/*
+Define a data de hoje na forma Day/Month/Year e retorna um Daytime (Na forma: _Day_Month_Year) para nomear o arquivod e log
+*/
 func Today() (Daytime string) {
 
 	years, month, day := time.Now().Date()
@@ -24,6 +27,7 @@ func Today() (Daytime string) {
 
 }
 
+//Essa função resume/facilita a aplicação de uma Expressão Regular (Regex)
 func RegexThis(regex string, target string) (result string) {
 	re := regexp.MustCompile(regex)
 	filter := re.FindAllString(target, -1)
@@ -31,6 +35,7 @@ func RegexThis(regex string, target string) (result string) {
 	return dojoin
 }
 
+//Cria um Diretorio no HOME do usuário
 func CreateDir(wg *sync.WaitGroup) {
 	HOME, err := os.UserHomeDir()
 	if err != nil {
@@ -42,7 +47,7 @@ func CreateDir(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-//Cria arquivos com as informações retiradas do computador via Terminal
+//Cria uma arquivo de logs
 func ActiveLogs() {
 
 	var errboolean bool = true

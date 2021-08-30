@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 //Modelo para coleta e envio de dados do computador.
@@ -243,12 +242,18 @@ type IDT struct {
 
 Busca o ID do Ativo Existente.*/
 func Getidbytag(assettag string, IP string) (ID int) {
+	//Define URL (link da API com IP do servidor + Assettag para localização do Ativo)
 	url := "http://" + IP + "/api/v1/hardware/bytag/" + assettag
+	//Código de autenticação
 	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
+	//REQUEST do GET
 	req, _ := http.NewRequest("GET", url, nil)
 
+	//HEADERs
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", bearer)
+
+	//Comunicação HTTP com o inventário
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatalf("Falha de conexão com o Host Snipeit.")
@@ -268,6 +273,7 @@ func Getidbytag(assettag string, IP string) (ID int) {
 		log.Printf("Reading body failed: %s", err)
 	}
 
+	//Recebimento do ID
 	Id := response.ID
 
 	return Id
@@ -282,12 +288,18 @@ Ao comparar ambos A. Existente e A. Criado ele destaca as disparidades e as reto
 
 OBS: Patchrequest é um JSON padronizado especificamente para o envio através do método PATCH.*/
 func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest string, Needpatching bool) {
+	//Define URL (link da API com IP do servidor + Assettag para localização do Ativo)
 	url := "http://" + IP + "/api/v1/hardware/bytag/" + assettag
+	//Código de autenticação
 	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
+	//REQUEST do GET
 	req, _ := http.NewRequest("GET", url, nil)
 
+	//HEADERs
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", bearer)
+
+	//Comunicação HTTP com o inventário
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatalf("Falha de conexão com o Host Snipeit.")
@@ -301,7 +313,7 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 		log.Println("Error on parsing response.\n[ERROR] -", err)
 	}
 
-	//log.Println("\nBilly Lowkão *easteregg*")
+	//Billy Lowkão *easteregg*
 
 	//Variável Struct utilizada para a análise de disparidades entre Ativo Existente no inventário e Ativo Criado pela execução do programa
 	var Analyser CollectionT = CollectionT{}
@@ -327,10 +339,10 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 	Analyser.SnipeitCPU11 = responsevar.CustomFields.CPU.Value
 	Analyser.SnipeitModel12 = responsevar.CustomFields.Modelo.Value
 
-	//Variável Array com as inforAtivoões da Variável Struct de análise
+	//Variável Array com as informações do Struct de análise
 	var AnalyserIndex = []string{Analyser.Name, Analyser.AssetTag, Analyser.ModelID, Analyser.StatusID, Analyser.SnipeitMema3Ria7, Analyser.SnipeitSo8, Analyser.SnipeitHd9, Analyser.SnipeitHostname10, Analyser.SnipeitCPU11, Analyser.SnipeitModel12}
 
-	//Variável Array com as inforAtivoões da Variável Struct do Ativo Criado
+	//Variável Array com as informações do Struct do Ativo Criado
 	var AtivoIndex = []string{ativo.Name, ativo.AssetTag, ativo.ModelID, ativo.StatusID, ativo.SnipeitMema3Ria7, ativo.SnipeitSo8, ativo.SnipeitHd9, ativo.SnipeitHostname10, ativo.SnipeitCPU11, ativo.SnipeitModel12}
 
 	//Variavél Array que contém as alterações pendentes
@@ -343,60 +355,74 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 	if Analyser != ativo {
 		log.Println("Disparidades encontradas.")
 		fmt.Println("Disparidades encontradas!")
-		fmt.Printf("Aprofundando análises")
-		for i := 0; i < 4; i++ {
-			time.Sleep(time.Second * 1)
-			fmt.Print(".")
-		}
 
+		//Analise de disparidades
 		for i := 0; i < len(AnalyserIndex); i++ {
 			if AnalyserIndex[i] != AtivoIndex[i] {
 				var Fieldname string
 				switch i {
 				case 0:
+					//Caso a disparidade seja encontrada no Index [0] do Array, é necessário PATCH no campo NAME
 					Patchresquest += ",\"name\":\"" + AtivoIndex[i] + "\""
 					Fieldname = "NAME"
 				case 1:
+					//Caso a disparidade seja encontrada no Index [1] do Array, é necessário PATCH no campo ASSET TAG
 					Patchresquest += ",\"asset_tag\":\"" + AtivoIndex[i] + "\""
 					Fieldname = "ASSET TAG"
 				case 2:
+					//Caso a disparidade seja encontrada no Index [2] do Array, é necessário PATCH no campo MODEL ID
 					Patchresquest += ",\"model_id\":\"" + AtivoIndex[i] + "\""
 					Fieldname = "MODEL ID"
 				case 3:
+					//Caso a disparidade seja encontrada no Index [3] do Array, é necessário PATCH no campo STATUS ID
 					Patchresquest += ",\"status_id\":\"" + AtivoIndex[i] + "\""
 					Fieldname = "STATUS ID"
 				case 4:
+					//Caso a disparidade seja encontrada no Index [4] do Array, é necessário PATCH no campo MEMÓRIA
 					Patchresquest += ",\"_snipeit_mema3ria_7\":\"" + AtivoIndex[i] + "\""
 					Fieldname = "MEMÓRIA"
 				case 5:
+					//Caso a disparidade seja encontrada no Index [5] do Array, é necessário PATCH no campo SISTEMA OPERACIONAL
 					Patchresquest += ",\"_snipeit_so_8\":\"" + AtivoIndex[i] + "\""
 					Fieldname = "SISTEMA OPERACIONAL"
 				case 6:
+					//Caso a disparidade seja encontrada no Index [6] do Array, é necessário PATCH no campo HD
 					Patchresquest += ",\"_snipeit_hd_9\":\"" + AtivoIndex[i] + "\""
 					Fieldname = "HD"
 				case 7:
+					//Caso a disparidade seja encontrada no Index [7] do Array, é necessário PATCH no campo HOSTNAME
 					Patchresquest += ",\"_snipeit_hostname_10\":\"" + AtivoIndex[i] + "\""
 					Fieldname = "HOSTNAME"
 				case 8:
+					//Caso a disparidade seja encontrada no Index [8] do Array, é necessário PATCH no campo CPU
 					Patchresquest += ",\"_snipeit_cpu_11\":\"" + AtivoIndex[i] + "\""
 					Fieldname = "CPU"
 				case 9:
+					//Caso a disparidade seja encontrada no Index [9] do Array, é necessário PATCH no campo MODELO
 					Patchresquest += ",\"_snipeit_modelo_12\":\"" + AtivoIndex[i] + "\""
 					Fieldname = "MODEL"
 				}
+
+				//Prints para visualizar disparidades
 				fmt.Printf("\nDisparidade encontrada no Index[%v]: %v\n", i, Fieldname)
 				log.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
 				fmt.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
+
+				//Acrescenta alterações a uma lista de pendências para expor visualmente depois
 				Pending = append(Pending, AtivoIndex[i])
-				time.Sleep(time.Second * 3)
 			} else {
+				//Se não há disparidades, continue a análise
 				continue
 			}
 		}
+
+		//Fechamento do Patchresquest
 		Patchresquest += "}"
 		fmt.Printf("\nAlterações pendentes:\n%v\n", Pending)
+		//Caso haja alterações, retorna true
 		return Patchresquest, true
 	} else {
+		//Caso não.. retorna false
 		return Patchresquest, false
 	}
 }
@@ -405,19 +431,27 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 
 Envia alterações feitas no ativo existente no inventário através de seu ID.*/
 func Patchbyid(id int, IP string, Patchresquest string) {
+	//Converte ID de string para int
 	strid := strconv.Itoa(id)
+	//Define URL (link da API com IP do servidor + Assettag para localização do Ativo)
 	url := "http://" + IP + "/api/v1/hardware/" + strid
 
 	payload := strings.NewReader(Patchresquest)
+	//REQUEST do GET
 	req, err := http.NewRequest("PATCH", url, payload)
 	if err != nil {
 		log.Fatalf("Request Error")
 	}
+
+	//Código de autenticação
 	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
+
+	//HEADERs
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", bearer)
 	req.Header.Add("Content-Type", "application/json")
 
+	//Comunicação HTTP com o inventário
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatalf("Falha de conexão com o Host Snipeit.")
@@ -439,13 +473,20 @@ func Patchbyid(id int, IP string, Patchresquest string) {
 
 Verifica se ativo existe procurando-o (GET) no inventário através do seu Asset Tag único.*/
 func Verifybytag(assettag string, IP string) bool {
-
+	//Define URL (link da API com IP do servidor + Assettag para localização do Ativo)
 	url := "http://" + IP + "/api/v1/hardware/bytag/" + assettag
+
+	//Código de autenticação
 	var bearer = "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2NlMzRhNDM0OGNjMGRkMjczMWQyMDM0ZDQ4MzRkZTZiMTQ3MGI3ODE2YWQyM2RmMjRmMzg0YzE3ZjIzOWU1N2E5ZTg2N2E0ODhlMTg5YTEiLCJpYXQiOjE2MjY0MzU0MzYsIm5iZiI6MTYyNjQzNTQzNiwiZXhwIjoyMDk5ODIxMDM1LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.JtCQ_KStz4TluCkt_6JGJLmSGVhuY6dS_3OQ7KJicm8vSgYnfh2cwzrjjgoDU92u5RN2-fMHMji_ju6a4Lm33_nyj6_qclFV9SPRtO-UqMJe7EVkPhe0bP3co-9dVKyfUmSyi7GjVeHkUcD2OGG9m_zhu7krpwzQRBNiaNR9dJwCeBEbH1O13kKQItRl_V_-DDEtFF-bTnQ3DbnlEqZxtY4we6-qjpXmIrGmOU27pH5DUXZ8-cxqlAKP1ysBz_BJRBYGN0HZqYyL2AgrTG_k9sPds2CSyqPhbTvjm7yD5IxPOAcmasJbJoAPSyZecpNSecOL7JVsjB7UFcDPTdIy6zykIqJV6Zj-3qwkg4VrAt6iGvSIPCfSPzlydwk3o0znDHisp_9IDGuSTII49kAGnGb5Kw6WWsV9xQrXBtm6R41cwVAGc47r9j8tLux5PmlXdcrSxGS1uiiaMwZSx1ZdvZlC85f5LSpKiA0qP85acTX2R_Aav4oqsx_FN-UkBuBs8ADYC-sxMDVDuokr49IkkgVY9LUfkk8-pQX4IqKZKBOHuPAT1NsalgDPOZG9pFaIQ9kmt9Qm6TkkinNIPiwcBJ2mqHXziirtvQqylfrH2MBkXAofHK_-EEkOCAsARfFT41iw7wkJwW5ijliz5SC2ZiG6HTFS9WIG88WNiRzu9qc"
+
+	//REQUEST do GET
 	req, _ := http.NewRequest("GET", url, nil)
 
+	//HEADERs
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", bearer)
+
+	//Comunicação HTTP com o inventário
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatalf("Falha de conexão com o Host Snipeit.")
