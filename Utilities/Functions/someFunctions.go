@@ -35,7 +35,7 @@ func RegexThis(regex string, target string) (result string) {
 	return dojoin
 }
 
-//Cria um Diretorio no HOME do usuário
+//Cria um Diretório no HOME do usuário
 func CreateDir(wg *sync.WaitGroup) {
 	HOME, err := os.UserHomeDir()
 	if err != nil {
@@ -47,7 +47,7 @@ func CreateDir(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-//Cria uma arquivo de logs
+//Cria um arquivo de logs
 func ActiveLogs() {
 
 	var errboolean bool = true

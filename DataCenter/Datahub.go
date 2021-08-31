@@ -161,7 +161,7 @@ func forMacOs() {
 
 	} else {
 		//caso já exista, o programa procura por disparidades.
-		log.Println("Um Ativo semelhante foi encontrado no sistema.")
+		//log.Println("Um Ativo semelhante foi encontrado no sistema.")
 		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
 		patch, boolean := snipe.Getbytag(IP, mac.AssetTag, mac)
 		if boolean {
@@ -174,7 +174,7 @@ func forMacOs() {
 
 		} else {
 			//Caso não haja disparidades... Nada acontece.
-			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
+			//log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
 			fmt.Println("\nSem alterações")
 		}
 	}
@@ -275,7 +275,7 @@ func forWindows() {
 
 	} else {
 		//caso já exista, o programa procura por disparidades.
-		log.Println("Um Ativo semelhante foi encontrado no sistema.")
+		//log.Println("Um Ativo semelhante foi encontrado no sistema.")
 		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
 		patch, boolean := snipe.Getbytag(IP, win.AssetTag, win)
 		if boolean {
@@ -288,7 +288,7 @@ func forWindows() {
 
 		} else {
 			//Caso não haja disparidades... Nada acontece.
-			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
+			//log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
 			fmt.Println("\nSem alterações")
 		}
 	}
@@ -390,7 +390,7 @@ func forLinux() {
 
 	} else {
 		//caso já exista, o programa procura por disparidades.
-		log.Println("Um Ativo semelhante foi encontrado no sistema.")
+		//log.Println("Um Ativo semelhante foi encontrado no sistema.")
 		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
 		patch, boolean := snipe.Getbytag(IP, lin.AssetTag, lin)
 		if boolean {
@@ -403,7 +403,7 @@ func forLinux() {
 
 		} else {
 			//Caso não haja disparidades... Nada acontece.
-			log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
+			//log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
 			fmt.Println("\nSem alterações")
 		}
 	}
@@ -417,7 +417,7 @@ func main() {
 	functions.ActiveLogs()
 
 	//Log de inicialização
-	log.Printf("\nInicio de execução.\n")
+	log.Printf("Inicio de execução.")
 
 	//Identificando sistema operacional
 	switch runtime.GOOS {
@@ -434,5 +434,5 @@ func main() {
 
 	//mensagem de encerramento
 	fmt.Println("\n\nObrigado pela paciência! (FIM)")
-	log.Printf("\nFim de execução.\n")
+	log.Printf("Fim de execução.")
 }
