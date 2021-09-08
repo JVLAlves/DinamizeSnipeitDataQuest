@@ -10,6 +10,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/fatih/color"
+	"github.com/rodaine/table"
 )
 
 //Modelo para coleta e envio de dados do computador.
@@ -288,6 +291,17 @@ Ao comparar ambos A. Existente e A. Criado ele destaca as disparidades e as reto
 
 OBS: Patchrequest é um JSON padronizado especificamente para o envio através do método PATCH.*/
 func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest string, Needpatching bool) {
+
+	//Define a formatação da tabela que será criada futuramente
+	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
+	columnFmt := color.New(color.FgYellow).SprintfFunc()
+
+	//Cria tabela com os Cabeçalhos "Ativo Existente", "Ativo Criado"
+	tbl := table.New("Ativo Existente", "Ativo Criado")
+
+	//Implementação da formatação
+	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+
 	//Define URL (link da API com IP do servidor + Assettag para localização do Ativo)
 	url := "http://" + IP + "/api/v1/hardware/bytag/" + assettag
 	//Código de autenticação
@@ -408,6 +422,9 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 				log.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
 				fmt.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
 
+				//Acrescenta informações a tabela
+				tbl.AddRow(AnalyserIndex[i], AtivoIndex[i])
+
 				//Acrescenta alterações a uma lista de pendências para expor visualmente depois
 				Pending = append(Pending, AtivoIndex[i])
 			} else {
@@ -419,7 +436,8 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 		//Fechamento do Patchresquest
 		Patchresquest += "}"
 		fmt.Printf("\nAlterações pendentes:\n%v\n", Pending)
-		//Caso haja alterações, retorna true
+		//Caso haja alterações,printe a tabela retorna true
+		tbl.Print()
 		return Patchresquest, true
 	} else {
 		//Caso não.. retorna false
