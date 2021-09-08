@@ -297,7 +297,7 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
 
 	//Cria tabela com os Cabeçalhos "Ativo Existente", "Ativo Criado"
-	tbl := table.New("Ativo Existente", "Ativo Criado")
+	tbl := table.New("Fieldname", "Ativo Existente", "Ativo Criado")
 
 	//Implementação da formatação
 	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
@@ -418,12 +418,10 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 				}
 
 				//Prints para visualizar disparidades
-				fmt.Printf("\nDisparidade encontrada no Index[%v]: %v\n", i, Fieldname)
 				log.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
-				fmt.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
 
 				//Acrescenta informações a tabela
-				tbl.AddRow(AnalyserIndex[i], AtivoIndex[i])
+				tbl.AddRow(Fieldname, AnalyserIndex[i], AtivoIndex[i])
 
 				//Acrescenta alterações a uma lista de pendências para expor visualmente depois
 				Pending = append(Pending, AtivoIndex[i])
