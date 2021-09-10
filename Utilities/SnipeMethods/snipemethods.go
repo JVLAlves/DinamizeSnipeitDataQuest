@@ -11,7 +11,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/rodaine/table"
 )
 
@@ -290,17 +289,7 @@ Ele recebe o Asset Tag único do Ativo existente e a variável que contém o tip
 Ao comparar ambos A. Existente e A. Criado ele destaca as disparidades e as retorna  em uma string Patchrequest, assim como um bool Needpatching que afirma se é necessário um PATCH ou não.
 
 OBS: Patchrequest é um JSON padronizado especificamente para o envio através do método PATCH.*/
-func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest string, Needpatching bool) {
-
-	//Define a formatação da tabela que será criada futuramente
-	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
-	columnFmt := color.New(color.FgYellow).SprintfFunc()
-
-	//Cria tabela com os Cabeçalhos "Ativo Existente", "Ativo Criado"
-	tbl := table.New("Fieldname", "Ativo Existente", "Ativo Criado")
-
-	//Implementação da formatação
-	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
+func Getbytag(IP string, assettag string, ativo CollectionT, f io.Writer) (Patchrequest string, Needpatching bool) {
 
 	//Define URL (link da API com IP do servidor + Assettag para localização do Ativo)
 	url := "http://" + IP + "/api/v1/hardware/bytag/" + assettag
@@ -367,6 +356,13 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 
 	//Verifica as disparidades, destacando-as e criando o Patchrequest.
 	if Analyser != ativo {
+
+		//Cria tabela com os Cabeçalhos "Ativo Existente", "Ativo Criado"
+		tbl := table.New("Fieldname", "Ativo Existente", "Ativo Criado")
+
+		//Implementação da formatação
+		tbl.WithWriter(f)
+
 		log.Println("Disparidades encontradas.")
 		fmt.Println("Disparidades encontradas!")
 
@@ -417,9 +413,6 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 					Fieldname = "MODEL"
 				}
 
-				//Prints para visualizar disparidades
-				log.Printf("\nAtivo no invetário apresenta: %v\nEnquanto, novo ativo apresenta:%v\n", AnalyserIndex[i], AtivoIndex[i])
-
 				//Acrescenta informações a tabela
 				tbl.AddRow(Fieldname, AnalyserIndex[i], AtivoIndex[i])
 
@@ -439,6 +432,56 @@ func Getbytag(IP string, assettag string, ativo CollectionT) (Patchrequest strin
 		return Patchresquest, true
 	} else {
 		//Caso não.. retorna false
+
+		//Cria tabela com os Cabeçalhos "Fieldname" e "Ativo Existente"
+		tbl := table.New("Fieldname", "Ativo Existente")
+
+		//Implementação da formatação
+		tbl.WithWriter(f)
+
+		for i := 0; i < len(AnalyserIndex); i++ {
+
+			var Fieldname string
+			switch i {
+			case 0:
+				Fieldname = "NAME"
+			case 1:
+
+				Fieldname = "ASSET TAG"
+			case 2:
+
+				Fieldname = "MODEL ID"
+			case 3:
+
+				Fieldname = "STATUS ID"
+			case 4:
+
+				Fieldname = "MEMÓRIA"
+			case 5:
+
+				Fieldname = "SISTEMA OPERACIONAL"
+			case 6:
+
+				Fieldname = "HD"
+			case 7:
+
+				Fieldname = "HOSTNAME"
+			case 8:
+
+				Fieldname = "CPU"
+			case 9:
+
+				Fieldname = "MODEL"
+			}
+
+			//Acrescenta informações a tabela
+			tbl.AddRow(Fieldname, AnalyserIndex[i])
+
+		}
+
+		//Expõe tabela do Ativo Existente
+		tbl.Print()
+
 		return Patchresquest, false
 	}
 }
@@ -532,7 +575,9 @@ func Verifybytag(assettag string, IP string) bool {
 /* POST
 
 Envia os dados do computador para o inventário no Snipeit. (Essa função recebe a variavel que recebe o tipo struct criado com os dados do computador)*/
-func PostSnipe(Ativo CollectionT, IP string) {
+func PostSnipe(Ativo CollectionT, IP string, f io.Writer) {
+
+	var AtivoIndex = []string{Ativo.Name, Ativo.AssetTag, Ativo.ModelID, Ativo.StatusID, Ativo.SnipeitMema3Ria7, Ativo.SnipeitSo8, Ativo.SnipeitHd9, Ativo.SnipeitHostname10, Ativo.SnipeitCPU11, Ativo.SnipeitModel12}
 
 	//URL da API SnipeIt
 	url := "http://" + IP + "/api/v1/hardware"
@@ -585,6 +630,54 @@ func PostSnipe(Ativo CollectionT, IP string) {
 		return
 	}
 
+	//Cria tabela com os Cabeçalhos "Fieldname" e "Ativo Existente"
+	tbl := table.New("Fieldname", "Novo Ativo")
+
+	//Implementação da formatação
+	tbl.WithWriter(f)
+
+	for i := 0; i < len(AtivoIndex); i++ {
+
+		var Fieldname string
+		switch i {
+		case 0:
+			Fieldname = "NAME"
+		case 1:
+
+			Fieldname = "ASSET TAG"
+		case 2:
+
+			Fieldname = "MODEL ID"
+		case 3:
+
+			Fieldname = "STATUS ID"
+		case 4:
+
+			Fieldname = "MEMÓRIA"
+		case 5:
+
+			Fieldname = "SISTEMA OPERACIONAL"
+		case 6:
+
+			Fieldname = "HD"
+		case 7:
+
+			Fieldname = "HOSTNAME"
+		case 8:
+
+			Fieldname = "CPU"
+		case 9:
+
+			Fieldname = "MODEL"
+		}
+
+		//Acrescenta informações a tabela
+		tbl.AddRow(Fieldname, AtivoIndex[i])
+
+	}
+
+	//Expõe tabela do Ativo Existente
+	tbl.Print()
 	//Printando o Response
 	fmt.Println("Response do POST:", response)
 }
