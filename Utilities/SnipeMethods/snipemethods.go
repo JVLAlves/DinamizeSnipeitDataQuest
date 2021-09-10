@@ -431,7 +431,7 @@ func Getbytag(IP string, assettag string, ativo CollectionT, f io.Writer) (Patch
 		return Patchresquest, true
 	} else {
 		//Caso não.. retorna false
-		_, _ = fmt.Fprintf(f, "Nenhuma disparidade foi encontrada no Ativo...")
+		_, _ = fmt.Fprintf(f, "Nenhuma disparidade foi encontrada no Ativo...\n\n")
 		_, _ = fmt.Fprintf(f, "")
 
 		//Cria tabela com os Cabeçalhos "Fieldname" e "Ativo Existente"
