@@ -144,7 +144,6 @@ func forMacOs(f *os.File) {
 
 		//Caso o Ativo não exista no sistema, as informações são enviadas para tal.
 		snipe.PostSnipe(mac, IP, f)
-
 	} else {
 		//caso já exista, o programa procura por disparidades.
 		//log.Println("Um Ativo semelhante foi encontrado no sistema.")
@@ -160,6 +159,7 @@ func forMacOs(f *os.File) {
 
 		} else {
 			//Caso não haja disparidades... Nada acontece.
+			_, _ = fmt.Fprintf(f, "")
 			fmt.Fprintln(f, "\nSem alterações")
 		}
 	}
