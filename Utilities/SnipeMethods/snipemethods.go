@@ -363,8 +363,7 @@ func Getbytag(IP string, assettag string, ativo CollectionT, f io.Writer) (Patch
 		//Implementação da formatação
 		tbl.WithWriter(f)
 
-		log.Println("Disparidades encontradas.")
-		fmt.Println("Disparidades encontradas!")
+		fmt.Fprintln(f, "Disparidades encontradas.")
 
 		//Analise de disparidades
 		for i := 0; i < len(AnalyserIndex); i++ {
@@ -428,10 +427,13 @@ func Getbytag(IP string, assettag string, ativo CollectionT, f io.Writer) (Patch
 		Patchresquest += "}"
 		fmt.Printf("\nAlterações pendentes:\n%v\n", Pending)
 		//Caso haja alterações,printe a tabela retorna true
+		_, _ = fmt.Fprintln(f, " ")
 		tbl.Print()
+		_, _ = fmt.Fprintln(f, " ")
 		return Patchresquest, true
 	} else {
 		//Caso não.. retorna false
+		_, _ = fmt.Fprintf(f, "Nenhuma disparidade foi encontrada no Ativo...")
 
 		//Cria tabela com os Cabeçalhos "Fieldname" e "Ativo Existente"
 		tbl := table.New("Fieldname", "Ativo Existente")
@@ -480,7 +482,9 @@ func Getbytag(IP string, assettag string, ativo CollectionT, f io.Writer) (Patch
 		}
 
 		//Expõe tabela do Ativo Existente
+		_, _ = fmt.Fprintln(f, " ")
 		tbl.Print()
+		_, _ = fmt.Fprintln(f, " ")
 
 		return Patchresquest, false
 	}
@@ -677,7 +681,9 @@ func PostSnipe(Ativo CollectionT, IP string, f io.Writer) {
 	}
 
 	//Expõe tabela do Ativo Existente
+	_, _ = fmt.Fprintln(f, " ")
 	tbl.Print()
+	_, _ = fmt.Fprintln(f, " ")
 	//Printando o Response
 	fmt.Println("Response do POST:", response)
 }

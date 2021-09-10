@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"os"
 	"runtime"
 	"strconv"
 	"strings"
@@ -20,7 +21,7 @@ import (
 var IP string = "10.20.1.79:8001" //IP do Invetário de TESTE
 
 //Função de execução do programa em MacOS
-func forMacOs() {
+func forMacOs(f *os.File) {
 
 	//Criando Arquivos via Goroutines
 	wg := &sync.WaitGroup{}
@@ -66,7 +67,7 @@ func forMacOs() {
 	//Caso não haja digitos no campo HOSTNAME (Fonte do Asset Tag), o retorno do sistema é um Asset Tag Default (NO ASSET TAG)
 	if mac.AssetTag == "" {
 		mac.AssetTag = "No Asset Tag"
-		log.Printf("Nenhum Asset Tag foi definido, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", MacOS.Infos[0])
+		fmt.Fprintf(f, "Nenhum Asset Tag foi definido, pois nenhuma sequência numérica foi encontrada no HOSTNAME: %v", MacOS.Infos[0])
 
 	}
 
@@ -138,26 +139,11 @@ func forMacOs() {
 
 	//Verificando a existência de um ativo semelhante no inventário Snipe it
 	if snipe.Verifybytag(mac.AssetTag, IP) {
-		log.Println("Os dados do Ativo Criado não constam no sistema.")
+		fmt.Fprintln(f, "Os dados do Ativo Criado não constam no sistema.")
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
 		//Caso o Ativo não exista no sistema, as informações são enviadas para tal.
 		snipe.PostSnipe(mac, IP, f)
-
-		//Log do resumo gráfico
-		log.Printf("NOVO ATIVO:\n")
-		log.Printf("NOME DO DISPOSITIVO: %v\n", mac.Name)
-		log.Printf("ASSET TAG: %v\n", mac.AssetTag)
-		log.Printf("TIPO DE ATIVO: %v\n", mac.ModelID)
-		log.Printf("MODELO DO ATIVO: %v\n", mac.SnipeitModel12)
-		log.Printf("STATUS: %v\n\n", mac.StatusID)
-		log.Printf("DESCRIÇÃO DO ATIVO\n")
-		log.Printf("HOSTNAME: %v\n", mac.SnipeitHostname10)
-		log.Printf("S.O.: %v\n", mac.SnipeitSo8)
-		log.Printf("CPU: %v\n", mac.SnipeitCPU11)
-		log.Printf("MEMORIA RAM: %v\n", mac.SnipeitMema3Ria7)
-		log.Printf("DISCO: %v\n\n", mac.SnipeitHd9)
-		log.Println("Ativo Criado enviado para o sistema.")
 
 	} else {
 		//caso já exista, o programa procura por disparidades.
@@ -174,14 +160,13 @@ func forMacOs() {
 
 		} else {
 			//Caso não haja disparidades... Nada acontece.
-			//log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
-			fmt.Println("\nSem alterações")
+			fmt.Fprintln(f, "\nSem alterações")
 		}
 	}
 }
 
 //Função de execução do programa em Windows
-func forWindows() {
+func forWindows(f *os.File) {
 
 	//Realiza o processo de coleta de dados do Sistema Windows e retorna as informações em um array Infos
 	Windows.MainProgram()
@@ -251,25 +236,11 @@ func forWindows() {
 
 	//Verificando a existência de um ativo semelhante no inventário Snipe it
 	if snipe.Verifybytag(win.AssetTag, IP) {
-		log.Println("Os dados do Ativo Criado não constam no sistema.")
+		fmt.Fprintln(f, "Os dados do Ativo Criado não constam no sistema.")
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
 		//Caso o Ativo não exista no sistema, as informações são enviadas para tal.
 		snipe.PostSnipe(win, IP, f)
-
-		//Log do resumo gráfico
-		log.Printf("NOVO ATIVO:\n")
-		log.Printf("NOME DO DISPOSITIVO: %v\n", win.Name)
-		log.Printf("ASSET TAG: %v\n", win.AssetTag)
-		log.Printf("TIPO DE ATIVO: %v\n", win.ModelID)
-		log.Printf("MODELO DO ATIVO: %v\n", win.SnipeitModel12)
-		log.Printf("STATUS: %v\n\n", win.StatusID)
-		log.Printf("DESCRIÇÃO DO ATIVO\n")
-		log.Printf("HOSTNAME: %v\n", win.SnipeitHostname10)
-		log.Printf("S.O.: %v\n", win.SnipeitSo8)
-		log.Printf("CPU: %v\n", win.SnipeitCPU11)
-		log.Printf("MEMORIA RAM: %v\n", win.SnipeitMema3Ria7)
-		log.Printf("DISCO: %v\n\n", win.SnipeitHd9)
 
 		log.Println("Ativo Criado enviado para o sistema.")
 
@@ -288,15 +259,14 @@ func forWindows() {
 
 		} else {
 			//Caso não haja disparidades... Nada acontece.
-			//log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
-			fmt.Println("\nSem alterações")
+			fmt.Fprintln(f, "\nSem alterações")
 		}
 	}
 
 }
 
 //Função de execução do programa em Linux
-func forLinux() {
+func forLinux(f *os.File) {
 
 	//Realiza o processo de coleta de dados do Sistema Linux e retorna as informações em um array Infos
 	Linux.MainProgram()
@@ -367,26 +337,11 @@ func forLinux() {
 
 	//Verificando a existência de um ativo semelhante no inventário Snipe it
 	if snipe.Verifybytag(lin.AssetTag, IP) {
-		log.Println("Os dados do Ativo Criado não constam no sistema.")
+		fmt.Fprintln(f, "Os dados do Ativo Criado não constam no sistema.")
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
 		//Caso o Ativo não exista no sistema, as informações são enviadas para tal.
 		snipe.PostSnipe(lin, IP, f)
-
-		//Log do resumo gráfico
-		log.Printf("NOVO ATIVO:\n")
-		log.Printf("NOME DO DISPOSITIVO: %v\n", lin.Name)
-		log.Printf("ASSET TAG: %v\n", lin.AssetTag)
-		log.Printf("TIPO DE ATIVO: %v\n", lin.ModelID)
-		log.Printf("MODELO DO ATIVO: %v\n", lin.SnipeitModel12)
-		log.Printf("STATUS: %v\n\n", lin.StatusID)
-		log.Printf("DESCRIÇÃO DO ATIVO\n")
-		log.Printf("HOSTNAME: %v\n", lin.SnipeitHostname10)
-		log.Printf("S.O.: %v\n", lin.SnipeitSo8)
-		log.Printf("CPU: %v\n", lin.SnipeitCPU11)
-		log.Printf("MEMORIA RAM: %v\n", lin.SnipeitMema3Ria7)
-		log.Printf("DISCO: %v\n\n", lin.SnipeitHd9)
-		log.Println("Ativo Criado enviado para o sistema.")
 
 	} else {
 		//caso já exista, o programa procura por disparidades.
@@ -403,8 +358,7 @@ func forLinux() {
 
 		} else {
 			//Caso não haja disparidades... Nada acontece.
-			//log.Println("Não foram encontradas disparidades entre o Ativo Existente no sistema e o Ativo Criado.")
-			fmt.Println("\nSem alterações")
+			fmt.Fprintln(f, "\nSem alterações")
 		}
 	}
 
@@ -422,12 +376,12 @@ func main() {
 	//Identificando sistema operacional
 	switch runtime.GOOS {
 	case "darwin":
-		forMacOs()
+		forMacOs(f)
 	case "linux":
-		forLinux()
+		forLinux(f)
 
 	case "windows":
-		forWindows()
+		forWindows(f)
 	default:
 		log.Fatalf("Erro em econtrar o Sistema Operacional")
 	}
