@@ -142,7 +142,7 @@ func forMacOs() {
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
 		//Caso o Ativo não exista no sistema, as informações são enviadas para tal.
-		snipe.PostSnipe(mac, IP)
+		snipe.PostSnipe(mac, IP, f)
 
 		//Log do resumo gráfico
 		log.Printf("NOVO ATIVO:\n")
@@ -163,7 +163,7 @@ func forMacOs() {
 		//caso já exista, o programa procura por disparidades.
 		//log.Println("Um Ativo semelhante foi encontrado no sistema.")
 		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
-		patch, boolean := snipe.Getbytag(IP, mac.AssetTag, mac)
+		patch, boolean := snipe.Getbytag(IP, mac.AssetTag, mac, f)
 		if boolean {
 			//Caso haja disparidades, o processo de PATCH é iniciado.
 			fmt.Println("\nPATCH necessário.")
@@ -255,7 +255,7 @@ func forWindows() {
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
 		//Caso o Ativo não exista no sistema, as informações são enviadas para tal.
-		snipe.PostSnipe(win, IP)
+		snipe.PostSnipe(win, IP, f)
 
 		//Log do resumo gráfico
 		log.Printf("NOVO ATIVO:\n")
@@ -277,7 +277,7 @@ func forWindows() {
 		//caso já exista, o programa procura por disparidades.
 		//log.Println("Um Ativo semelhante foi encontrado no sistema.")
 		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
-		patch, boolean := snipe.Getbytag(IP, win.AssetTag, win)
+		patch, boolean := snipe.Getbytag(IP, win.AssetTag, win, f)
 		if boolean {
 			//Caso haja disparidades, o processo de PATCH é iniciado.
 			fmt.Println("\nPATCH necessário.")
@@ -371,7 +371,7 @@ func forLinux() {
 		fmt.Println("Enviando Ativo para o Snipeit ")
 
 		//Caso o Ativo não exista no sistema, as informações são enviadas para tal.
-		snipe.PostSnipe(lin, IP)
+		snipe.PostSnipe(lin, IP, f)
 
 		//Log do resumo gráfico
 		log.Printf("NOVO ATIVO:\n")
@@ -392,7 +392,7 @@ func forLinux() {
 		//caso já exista, o programa procura por disparidades.
 		//log.Println("Um Ativo semelhante foi encontrado no sistema.")
 		fmt.Print("Asset Tag idêntico encontrado. Iniciando análise de disparidades")
-		patch, boolean := snipe.Getbytag(IP, lin.AssetTag, lin)
+		patch, boolean := snipe.Getbytag(IP, lin.AssetTag, lin, f)
 		if boolean {
 			//Caso haja disparidades, o processo de PATCH é iniciado.
 			fmt.Println("\nPATCH necessário.")
@@ -414,7 +414,7 @@ func forLinux() {
 func main() {
 
 	//Cria tanto a pasta para logs quanto o arquivo inicial de logs
-	functions.ActiveLogs()
+	f := functions.ActiveLogs()
 
 	//Log de inicialização
 	log.Printf("Inicio de execução.")
